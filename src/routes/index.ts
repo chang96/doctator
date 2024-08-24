@@ -1,10 +1,9 @@
-import App from '../App';
 import NotFound from '../pages/notFound';
 
 export const routes: Array<RouteObject> = [
     {
     name: 'home',
-    component: App ,
+    component: NotFound ,
     exact: true,
     path: '/',
     authType: 'unAuthenticated',

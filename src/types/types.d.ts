@@ -7,3 +7,9 @@ type RouteObject = {
     authType: 'unAuthenticated' | 'authenticated';
     redirectTo?: string;
 }
+
+type State = {
+    displayModal: boolean;
+}
+
+type ActionTypess = Action<string>
