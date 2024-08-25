@@ -1,9 +1,10 @@
+import GenDocs from '../pages/generate';
 import NotFound from '../pages/notFound';
 
 export const routes: Array<RouteObject> = [
     {
     name: 'home',
-    component: NotFound ,
+    component: GenDocs,
     exact: true,
     path: '/',
     authType: 'unAuthenticated',
