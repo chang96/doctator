@@ -1,2 +1,4 @@
 export const OPEN_MODAL = "OPEN_MODAL";
 export const CLOSE_MODAL = "CLOSE_MODAL";
+export const CONFIG_SELECTED = "CONFIG_SELECTED";
+export const PATH_SELECTED = "PATH_SELECTED";
