@@ -13,3 +13,15 @@ type State = {
 }
 
 type ActionTypess = Action<string>
+
+type Queries = Record<string, string>[];
+type Params = string[]
+type RequestData = {
+    method: Method;
+    baseUrl: string;
+    path: string;
+    payload?: any;
+    headers?: Record<string, string>;
+    queries?: Queries
+    params?: Params;
+}
