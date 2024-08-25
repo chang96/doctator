@@ -1,23 +1,34 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { CONFIG_SELECTED, PATH_SELECTED } from '../actions/actions';
 
 interface ModalState {
   displayModal: boolean;
+  selected: "Configs" | "Paths" | undefined
 }
 
 const initialState: ModalState  = {
   displayModal: false,
+  selected: undefined
 };
 
 const modalSlice = createSlice({
   name: 'modal',
   initialState,
   reducers: {
-    openModal(state) {
-      state.displayModal = true
+    openModal(state, action) {
+      if(action.payload.type === CONFIG_SELECTED){
+        state.selected = "Configs"
+      } else if(action.payload.type === PATH_SELECTED){
+        state.selected = "Paths"
+      }else if(action.payload.type === state.selected){
+        state.selected = undefined
+      }
+      state.displayModal = !state.displayModal
     },
     closeModal(state) {
       state.displayModal = false
-    },
+      state.selected = undefined
+    }
   },
 });
 
