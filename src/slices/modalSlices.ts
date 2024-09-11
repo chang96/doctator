@@ -3,7 +3,7 @@ import { CONFIG_SELECTED, PATH_SELECTED } from '../actions/actions';
 
 interface ModalState {
   displayModal: boolean;
-  selected: "Configs" | "Paths" | undefined
+  selected: "config" | "paths" | undefined
 }
 
 const initialState: ModalState  = {
@@ -17,9 +17,9 @@ const modalSlice = createSlice({
   reducers: {
     openModal(state, action) {
       if(action.payload.type === CONFIG_SELECTED){
-        state.selected = "Configs"
+        state.selected = "config"
       } else if(action.payload.type === PATH_SELECTED){
-        state.selected = "Paths"
+        state.selected = "paths"
       }else if(action.payload.type === state.selected){
         state.selected = undefined
       }

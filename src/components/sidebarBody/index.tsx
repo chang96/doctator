@@ -17,14 +17,14 @@ if (!window.localStorage.getItem('projects')) window.localStorage.setItem('proje
 
 const btns = [
   {
-    name: "Config",
+    name: "config",
     styles: { height: "30px", width: "80%" },
     func: (d: AppDispatch, f: any) => {
         d(f({type: CONFIG_SELECTED}))
     },
   },
   {
-    name: "Paths",
+    name: "paths",
     styles: { height: "30px", width: "80%", marginTop: "5%" },
     func: (d: AppDispatch, f: any) => {
       d(f({type: PATH_SELECTED}))
