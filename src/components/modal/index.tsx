@@ -3,9 +3,11 @@ import { AppDispatch, RootState } from "../../store/store";
 // import { getSampleTemplates } from "../../utils/docRequests";
 // import { useEffect, useState } from "react";
 // import { setProject } from "../../utils/localstorageFuncs";
-import TextArea from "../textarea";
+// import TextArea from "../textarea";
 import { useCallback, useEffect } from "react";
 import { closeModal } from "../../slices/modalSlices";
+import Form from "../form";
+let mql = window.matchMedia('(max-width: 900px)')
 
 export default function Modal(): JSX.Element{
     const {displayModal: mod } = useSelector((state: RootState) => state.modal)
@@ -32,7 +34,7 @@ export default function Modal(): JSX.Element{
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        width: "50%",
+        width: mql.matches ? "100%" : "50%",
         height: "50%",
         backgroundColor: "rgba(255, 255, 255, 1)",
         display: mod ? "flex" : "none",
@@ -40,8 +42,9 @@ export default function Modal(): JSX.Element{
         alignItems: "center",
         borderRadius: "10px",
         zIndex: "100",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)"
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+        padding:""
     }}>
-        <TextArea />
+        <Form />
     </div>
 }
