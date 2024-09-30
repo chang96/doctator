@@ -28,11 +28,11 @@ function Form() {
         {sections[state.index]}
       </div>
       <div style={{display: "flex", flexDirection:"row", justifyContent: "space-between"}}>
-        <div onClick={() => nextSection()} style={{ cursor: "pointer" }}>
-          next
-        </div>
         <div onClick={() => prevSection()} style={{ cursor: "pointer" }}>
           prev
+        </div>
+        <div onClick={() => nextSection()} style={{ cursor: "pointer" }}>
+          next
         </div>
       </div>
     </div>
