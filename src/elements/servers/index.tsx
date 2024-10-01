@@ -1,11 +1,17 @@
 import React, { useState } from "react";
 import "../elements.css";
+import { getProject, setProjectByProjectName } from "../../utils/localstorageFuncs";
 
 type Servers = { url: string };
 function ServersFunc() {
-  const [state, setState] = useState<{ servers: Servers[] }>({ servers: [] });
+  const projectName = 'defaultProject'
+  const projectConfiguration = getProject(projectName)
+  const serversArr = projectConfiguration.config.servers as Servers[]
+  const [state, setState] = useState<{ servers: Servers[] }>({ servers: [...serversArr] });
   const addServer = () => {
     setState({ servers: [...state.servers, { url: "" }] });
+    projectConfiguration.config.servers = [...state.servers, { url: "" }]
+    setProjectByProjectName(projectName, projectConfiguration)
   };
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -13,13 +19,16 @@ function ServersFunc() {
     const index = Number(name.split('-')[1])
     state.servers[index].url = value
     setState({ servers: [...state.servers]})
-    
+    projectConfiguration.config.servers[index].url = value 
+    setProjectByProjectName(projectName, projectConfiguration)
   };
 
   const deleteServer = (index: number) => {
     const newServers = [...state.servers];
     newServers.splice(index, 1);
     setState({ servers: newServers });
+    projectConfiguration.config.servers = newServers
+    setProjectByProjectName(projectName, projectConfiguration)
   };
 
   return (
