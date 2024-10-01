@@ -22,6 +22,12 @@ function setProject(projectName: string, data:{config: any, paths: any, set: boo
     window.localStorage.setItem('projects', JSON.stringify(projects));
 }
 
+function setProjectByProjectName(projectName: string, newData:any){
+    const projects = JSON.parse(window.localStorage.getItem('projects') || '{}');
+    projects[projectName] = newData;
+    window.localStorage.setItem('projects', JSON.stringify(projects));
+}
+
 function deleteProject(projectName: string){
     const projects = JSON.parse(window.localStorage.getItem('projects') || '{}');
     delete projects[projectName];
@@ -31,5 +37,6 @@ export {
     initializeProjects,
     getProject,
     setProject,
-    deleteProject
+    deleteProject,
+    setProjectByProjectName
 }
