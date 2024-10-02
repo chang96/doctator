@@ -1,27 +1,61 @@
 import React, { useState } from "react";
 import "../elements.css";
-type Sec = { schemeName: string; type: string; in: string; name: string };
+import { getProject, setProjectByProjectName } from "../../utils/localstorageFuncs";
+type Sec = { schemeName: string; type: string; in?: string; name?: string; description?: string; bearerFormat?: string; scheme?: string };
 type F = keyof Sec;
 function SecuritySchemes() {
+  const projectName = 'defaultProject'
+  const projectConfiguration = getProject(projectName)
+  const securitySchemesObj = (projectConfiguration.config.components.securitySchemes as Record<string, Omit<Sec, 'schemeName'>>)
+  const securitySchemesArr = Object.entries(securitySchemesObj).map(([name, sec]) => ({...sec, schemeName: name }));
   const [state, setState] = useState<{ securityScheme: Sec[] }>({
-    securityScheme: [],
+    securityScheme: [...securitySchemesArr],
   });
   const addSecurityScheme = () => {
-    const newSec = { schemeName: "", type: "", in: "", name: "" };
+    const newSec = { schemeName: "", type: "", in: "", name: "", description:"", bearerFormat: "", scheme: "" };
     setState({ securityScheme: [...state.securityScheme, newSec] });
+    projectConfiguration.config.components.securitySchemes = [...state.securityScheme, newSec].reduce((acc, curr) => {
+      for (const k in curr) {
+        if (curr[k as F]  === 'unused') {
+          delete curr[k as F];
+        }
+      }
+      acc[curr.schemeName] = curr
+      return acc;
+    }, {} as Record<string, Sec>)
+    setProjectByProjectName(projectName, projectConfiguration)
   };
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name, value } = e.target;
     const [field, index] = name.split("-");
-    state.securityScheme[Number(index)][field as F] = value;
-    setState({ securityScheme: [...state.securityScheme] });
+    const stateCopy = [...state.securityScheme]
+    stateCopy[Number(index)][field as F] = value;
+    setState({ securityScheme: [...stateCopy] });
+    projectConfiguration.config.components.securitySchemes = [...stateCopy].reduce((acc, curr) => {
+      for (const k in curr) {
+        if (curr[k as F]  === 'unused') {
+          delete curr[k as F];
+        }
+      }
+      acc[curr.schemeName] = curr
+      return acc;
+    }, {} as Record<string, Sec>)
+    setProjectByProjectName(projectName, projectConfiguration)
   };
   const deleteSecurityScheme = (index: number) => {
     const newSec = [...state.securityScheme];
-    console.log(newSec);
     newSec.splice(index, 1);
-    console.log(newSec); // Check if the deletion is working properly. If it's not, add a console.log statement here.
     setState({ securityScheme: newSec });
+    projectConfiguration.config.components.securitySchemes = [...newSec].reduce((acc, curr) => {
+      for (const k in curr) {
+        if (curr[k as F]  === 'unused') {
+          delete curr[k as F];
+        }
+      }
+      acc[curr.schemeName] = curr
+      return acc;
+    }, {} as Record<string, Sec>)
+    setProjectByProjectName(projectName, projectConfiguration)
   };
 
   return (
@@ -32,6 +66,22 @@ function SecuritySchemes() {
 
       <div>
         {state.securityScheme.map((sec, index) => {
+          console.log(sec.type)
+          if (sec.type === 'http') {
+            sec.description = 'unused'
+            sec.in = 'unused'
+            sec.name = 'unused'
+            sec.bearerFormat = sec.bearerFormat === "unused" ? "" : sec.bearerFormat
+            sec.scheme = sec.scheme === "unused" ? "" : sec.scheme
+          }
+          if (sec.type === 'apiKey') {
+            sec.bearerFormat = 'unused'
+            sec.description = 'unused'
+            sec.scheme = 'unused'
+            sec.in = sec.in === "unused" ? "" : sec.in
+            sec.name = sec.name === "unused" ? "" : sec.name
+          }
+          const x = Object.entries(sec).filter(([k, v]) => v !== 'unused')
           return (
             <div style={{ margin: "5px" }} key={index}>
               <button
@@ -40,7 +90,18 @@ function SecuritySchemes() {
               >
                 X
               </button>
-              <div>
+              {x.map(([k, v], i) => {
+                return <div key={i}>
+                <div>{k}:</div>
+                <input
+                  name={`${k}-${index}`}
+                  value={v}
+                  onChange={handleChange}
+                />
+              </div>
+              })}
+             
+              {/* <div>
                 <div>scheme name:</div>
                 <input
                   name={`schemeName-${index}`}
@@ -68,6 +129,30 @@ function SecuritySchemes() {
                   onChange={handleChange}
                 />
               </div>
+              <div>
+                <div>description:</div>
+                <input
+                  name={`description-${index}`}
+                  value={sec.description}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <div>bearerFormat:</div>
+                <input
+                  name={`bearerFormat-${index}`}
+                  value={sec.bearerFormat}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <div>scheme:</div>
+                <input
+                  name={`scheme-${index}`}
+                  value={sec.scheme}
+                  onChange={handleChange}
+                />
+              </div> */}
             </div>
           );
         })}
