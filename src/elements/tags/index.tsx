@@ -1,24 +1,35 @@
 import React, { useState } from "react";
 import '../elements.css'
+import { getProject, setProjectByProjectName } from "../../utils/localstorageFuncs";
 
 type Tag = { name: string; description: string };
 function TagFunc() {
-  const [state, setState] = useState<{ tags: Tag[] }>({ tags: [] });
+  const projectName = 'defaultProject'
+  const projectConfiguration = getProject(projectName)
+  const tagsArr = projectConfiguration.config.tags as Tag[]
+
+  const [state, setState] = useState<{ tags: Tag[] }>({ tags: [...tagsArr] });
   const addTag = () => {
     const newTags = [...state.tags, { name: "", description: "" }];
     setState({ tags: newTags });
+    projectConfiguration.config.tags = [...state.tags, { name: "", description: "" }]
+    setProjectByProjectName(projectName, projectConfiguration)
   };
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name, value } = e.target;
     const [field, index] = name.split('-');
     state.tags[Number(index)][field as 'description' | 'name'] = value
     setState({ tags: [...state.tags]})
+    projectConfiguration.config.tags[index][field as 'description' | 'name'] = value
+    setProjectByProjectName(projectName, projectConfiguration)
   };
 
   const deleteTag = (index: number) => {
     const newTags = [...state.tags];
     newTags.splice(index, 1);
     setState({ tags: newTags });
+    projectConfiguration.config.tags = newTags
+    setProjectByProjectName(projectName, projectConfiguration)
   };
   return (
     <div className="c">
