@@ -8,6 +8,11 @@
     flex-direction: column;
 }
 
+.fr {
+  display: flex;
+  flex-direction: row;
+}
+
 
 .add-button {
     font-size: 13px; 

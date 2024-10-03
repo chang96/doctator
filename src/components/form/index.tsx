@@ -4,6 +4,7 @@ import Info from "../../elements/info";
 import SecuritySchemes from "../../elements/securitySchemes";
 import Servers from "../../elements/servers";
 import { useState } from "react";
+import Security from "../../elements/security";
 
 function Form() {
   const [state, setState] = useState({ index: 0 });
@@ -12,6 +13,7 @@ function Form() {
     <Info />,
     <Servers />,
     <SecuritySchemes />,
+    <Security />,
     <Tag />,
   ];
 
