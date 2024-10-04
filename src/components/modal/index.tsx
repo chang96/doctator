@@ -6,7 +6,7 @@ import { AppDispatch, RootState } from "../../store/store";
 // import TextArea from "../textarea";
 import { useCallback, useEffect } from "react";
 import { closeModal } from "../../slices/modalSlices";
-import Form from "../form";
+import Form from "../config";
 let mql = window.matchMedia('(max-width: 900px)')
 
 export default function Modal(): JSX.Element{
