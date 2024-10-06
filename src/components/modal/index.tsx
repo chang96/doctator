@@ -4,13 +4,17 @@ import { AppDispatch, RootState } from "../../store/store";
 // import { useEffect, useState } from "react";
 // import { setProject } from "../../utils/localstorageFuncs";
 // import TextArea from "../textarea";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { closeModal } from "../../slices/modalSlices";
 import Form from "../config";
+import Paths from "../paths";
+
 let mql = window.matchMedia('(max-width: 900px)')
 
 export default function Modal(): JSX.Element{
-    const {displayModal: mod } = useSelector((state: RootState) => state.modal)
+    const {displayModal: mod, selected } = useSelector((state: RootState) => state.modal)
+    const [state, setState] = useState({selectedForm: selected})
+
     const dispatch: AppDispatch = useDispatch();
     
     const escFunction = useCallback((event: any) => {
@@ -29,6 +33,10 @@ export default function Modal(): JSX.Element{
         };
       }, [escFunction]);
 
+      useEffect(() => {
+        setState({selectedForm: selected})
+      }, [selected]);
+
     return <div style={{
         position: "fixed",
         top: "50%",
@@ -45,6 +53,6 @@ export default function Modal(): JSX.Element{
         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
         padding:""
     }}>
-        <Form />
+        {state.selectedForm ? state.selectedForm === 'config' ? <Form /> : <Paths />  : "" }
     </div>
 }
