@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import modalReducer from "../slices/modalSlices";
 import configReducer from "../slices/docsConfigSlices"
+import requestConfigReducer from "../slices/request";
 const store = configureStore({
   reducer: {
     modal: modalReducer,
-    config: configReducer
+    config: configReducer,
+    requestConfig: requestConfigReducer
   },
 });
 
