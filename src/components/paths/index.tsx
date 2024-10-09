@@ -9,8 +9,10 @@ import PathText from '../../elements/paths'
 import Queries from '../../elements/queries'
 import Url from '../../elements/url'
 import TagsSelection from '../../elements/tagsSelection'
-
 import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../../store/store'
+import { setMethod } from '../../slices/request'
 
 type PathElements = {
     description: JSX.Element,
@@ -38,36 +40,44 @@ const pathElements = {
     tags: <TagsSelection />
 }
 function Paths() {
-    const [state, setState] = useState<{active: PathElementsKey}>({active: "url"})
-    const handleActiveelement = (e: React.MouseEvent<HTMLDivElement>) => {
-        setState({active: e.currentTarget.id as PathElementsKey})
+    const {baseUrl: selectedUrl, method} = useSelector((state: RootState) => state.requestConfig)
+    const [state, setState] = useState<{active: PathElementsKey, baseUrl: string}>({active: "url", baseUrl: "", })
+    const dispatch: AppDispatch = useDispatch()
+    const handleActiveElement = (e: React.MouseEvent<HTMLDivElement>) => {
+        setState({...state, active: e.currentTarget.id as PathElementsKey})
+    }
+    const handleMethodChange: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+        const {value} = e.target
+        dispatch(setMethod({method: value}))
+    }
+    const sendRequest = () => {
+        console.log(method, selectedUrl)
     }
     return <div>
         <div className="fr2 ov">
         <div className='flex15'>
-            <select>
+            <select onChange={handleMethodChange}>
                 <option>GET</option>
                 <option>POST</option>
                 <option>PUT</option>
                 <option>PATCH</option>
                 <option>DELETE</option>
-                <option>OPTION</option>
             </select>
         </div>
-        <div className='flex70'><input className='fw' /></div>
-        <div className='flex15'><button className='fw'>send</button></div>
+        <div className='flex70'><input value={selectedUrl} readOnly className='fw' /></div>
+        <div className='flex15'><button onClick={sendRequest} className='fw'>send</button></div>
         </div>
 
         <div className="fr1 ov">
-            <div onClick={handleActiveelement} className='pointa' id="url">Url</div>
-            <div onClick={handleActiveelement} className='pointa' id="path">Path</div>
-            <div onClick={handleActiveelement} className='pointa' id="params">Params</div>
-            <div onClick={handleActiveelement} className='pointa' id="queries">Queries</div>
-            <div onClick={handleActiveelement} className='pointa' id="headers">Headers</div>
-            <div onClick={handleActiveelement} className='pointa' id="auth">Auth</div>
-            <div onClick={handleActiveelement} className='pointa' id="body">Body</div>
-            <div onClick={handleActiveelement} className='pointa' id="description">Description</div>
-            <div onClick={handleActiveelement} className='pointa' id="tags">Tags</div>
+            <div onClick={handleActiveElement} className='pointa' id="url">Url</div>
+            <div onClick={handleActiveElement} className='pointa' id="path">Path</div>
+            <div onClick={handleActiveElement} className='pointa' id="params">Params</div>
+            <div onClick={handleActiveElement} className='pointa' id="queries">Queries</div>
+            <div onClick={handleActiveElement} className='pointa' id="headers">Headers</div>
+            <div onClick={handleActiveElement} className='pointa' id="auth">Auth</div>
+            <div onClick={handleActiveElement} className='pointa' id="body">Body</div>
+            <div onClick={handleActiveElement} className='pointa' id="description">Description</div>
+            <div onClick={handleActiveElement} className='pointa' id="tags">Tags</div>
         </div>
 
         <div className='elementContainer ov'>
