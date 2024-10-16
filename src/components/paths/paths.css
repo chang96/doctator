@@ -40,6 +40,9 @@
 .flex70 {
     flex: 7
 }
+.mt {
+  margin-top: 10px;
+}
 
 .flex15 {
     flex: 1.5
