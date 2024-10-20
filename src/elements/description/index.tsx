@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { setDescriptionDetails } from "../../slices/request";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store/store";
 
 type DescriptionDetails = {
   name: string;
@@ -10,6 +10,12 @@ type DescriptionDetails = {
   operationId: string;
 }
 function Description() {
+  const {
+    name,
+    description,
+    summary,
+    operationId,
+  } = useSelector((state: RootState) => state.requestConfig.endpoints[state.requestConfig.selectedEndpoint]);
   const [state, setState] = useState<DescriptionDetails>({name: "", description:"", summary:"", operationId:""})
   const dispatch: AppDispatch = useDispatch();
 
@@ -20,10 +26,10 @@ function Description() {
   }
   return (
     <div>
-      <input onChange={handleChange} placeholder="Name" name="name" type="text" />
-      <input onChange={handleChange} placeholder="Description" name="description" type="text" />
-      <input onChange={handleChange} placeholder="Summary" name="summary" type="text" />
-      <input onChange={handleChange} placeholder="Operation Id" name="operationId" type="text" />
+      <input value={name} onChange={handleChange} placeholder="Name" name="name" type="text" />
+      <input value={description} onChange={handleChange} placeholder="Description" name="description" type="text" />
+      <input value={summary} onChange={handleChange} placeholder="Summary" name="summary" type="text" />
+      <input value={operationId} onChange={handleChange} placeholder="Operation Id" name="operationId" type="text" />
     </div>
   );
 }

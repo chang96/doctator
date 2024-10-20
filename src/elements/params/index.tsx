@@ -1,36 +1,50 @@
 import { useState } from "react"
 import "../elements.css"
 import { setParams } from "../../slices/request"
-import { AppDispatch } from "../../store/store"
-import { useDispatch } from "react-redux"
+import { AppDispatch, RootState } from "../../store/store"
+import { useDispatch, useSelector } from "react-redux"
+
 type Params = {fieldName: string, value: string}
 type K = keyof Params
-function Params (){
-    const [state, setState] = useState<{params: Params[]}>({params: []})
+const makeReadableParams = (p?: string[]): Params[] => {
+  if (!p) return []
+  return p.map(x => {
+    const [field, value] = x.split(".")
+    return {fieldName: field, value: value}
+  })
+}
+function ParamsFunc (){
+  const {
+    requestParams,
+  } = useSelector((state: RootState) => state.requestConfig.endpoints[state.requestConfig.selectedEndpoint]);
+  const readableParams = makeReadableParams(requestParams)
+    const [state, setState] = useState<{params: Params[]}>({params:  readableParams})
     const dispatch: AppDispatch = useDispatch()
     const addParam = () => {
         setState((state) => ({params: [...state.params, {fieldName: "", value: "" }]}));
+        const formedParams = [...state.params, {fieldName: "", value: "" }].map(x => x.fieldName+'.'+x.value)
+        dispatch(setParams({params: formedParams}))
     }
     const removeParams = (index: number) => {
         const newParams = [...state.params]
         newParams.splice(index, 1)
         setState({params: newParams})
-        const p = "/" + [...newParams].map(x => x.value).join("/")
-        dispatch(setParams({params: p}))
+        const formedParams = [...newParams].map(x => x.fieldName+'.'+x.value)
+        dispatch(setParams({params: formedParams}))
     }
     const handleChange : React.ChangeEventHandler<HTMLInputElement> = (e) => {
         const {name, value} = e.target
         const [field, index] = name.split('-')
         state.params[Number(index)][field as K] = value
         setState((state) => ({params: [...state.params]}))
-        if (field === "value" ) {
-            const p = "/" + [...state.params].map(x => x.value).join("/")
-            dispatch(setParams({params: p}))
-        }
+        // if (field === "value" ) {
+            const formedParams = [...state.params].map(x => x.fieldName+'.'+x.value)
+            dispatch(setParams({params: formedParams}))
+        // }
     }
     return <div className="c">
         <div className="fc">
-        {state.params.map((params, index) => {
+        {readableParams.map((params, index) => {
         return <div style={{margin: "5px"}} key ={index}>
               <button
                 className="remove-button"
@@ -56,4 +70,4 @@ function Params (){
     </div>
 }
 
-export default Params
+export default ParamsFunc

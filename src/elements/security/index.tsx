@@ -28,6 +28,23 @@ function Security() {
   const addSecurity = () => {
     const newSecurity: SecurityType = reducedSecArr;
     setState({ security: [...state.security, newSecurity] });
+    const stateCopy = JSON.parse(
+      JSON.stringify(newSecurity)
+    ) as SecurityType[];
+
+    // stateCopy[Number(index)][field] ? stateCopy[Number(index)][field] = false : stateCopy[Number(index)][field] = []
+    const delUnused = stateCopy.map((x) => {
+      for (const k in x) {
+        if (!x[k]) {
+          delete x[k];
+        }
+      }
+
+      return x;
+    });
+    projectConfiguration.config.security = delUnused;
+
+    setProjectByProjectName(projectName, projectConfiguration);
   };
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name } = e.target;
@@ -61,6 +78,23 @@ function Security() {
     const newSecurity = [...state.security];
     newSecurity.splice(index, 1);
     setState({ security: newSecurity });
+    const stateCopy = JSON.parse(
+      JSON.stringify(newSecurity)
+    ) as SecurityType[];
+
+    // stateCopy[Number(index)][field] ? stateCopy[Number(index)][field] = false : stateCopy[Number(index)][field] = []
+    const delUnused = stateCopy.map((x) => {
+      for (const k in x) {
+        if (!x[k]) {
+          delete x[k];
+        }
+      }
+
+      return x;
+    });
+    projectConfiguration.config.security = delUnused;
+
+    setProjectByProjectName(projectName, projectConfiguration);
   };
   return (
     <div className="c">

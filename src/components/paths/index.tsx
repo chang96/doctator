@@ -12,8 +12,8 @@ import TagsSelection from "../../elements/tagsSelection";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
-import { setMethod } from "../../slices/request";
-import { getProject } from "../../utils/localstorageFuncs";
+import { setMethod, setNewEnpoint, setSelectedEndpoint, deleteEndpoint } from "../../slices/request";
+import { extractParams, extractQueries } from "../../utils/helpers";
 
 type PathElements = {
   description: JSX.Element;
@@ -41,31 +41,38 @@ const pathElements = {
   tags: <TagsSelection />,
 };
 
-
 function Paths() {
-  const projectName = 'defaultProject'
-  const projectConfiguration = getProject(projectName)
-  const endpoints = projectConfiguration.paths.endpoints.map((x: any) => `${x.method} ${x.path}`)
-  
   const {
     baseUrl: selectedUrl,
     method,
-    paths,
-    params,
-    queries,
+    path,
+    requestParams: params,
+    requestQueries: queries,
     headers,
-    body,
+    requestBody: body,
     description,
     summary,
     name,
     operationId,
     tags,
-  } = useSelector((state: RootState) => state.requestConfig);
+    authd,
+    responses
+  } = useSelector(
+    (state: RootState) =>
+      state.requestConfig.endpoints[state.requestConfig.selectedEndpoint]
+  );
+
+  const endpointsArr = useSelector((state: RootState) => state.requestConfig.endpoints)
+  const endpoints = endpointsArr.map(
+    (x: any) => `${x.method} ${x.path}`.toLowerCase()
+  );
+  console.log(endpoints)
 
   const [state, setState] = useState<{
     active: PathElementsKey;
     baseUrl: string;
-  }>({ active: "url", baseUrl: "" });
+    selectedResponseIndex: number;
+  }>({ active: "url", baseUrl: "", selectedResponseIndex: 0 });
 
   const dispatch: AppDispatch = useDispatch();
 
@@ -78,31 +85,83 @@ function Paths() {
     const { value } = e.target;
     dispatch(setMethod({ method: value }));
   };
+  const handleResponseCodeSelection: React.ChangeEventHandler<HTMLSelectElement> =(e) => {
+    let {value} = e.target
+    setState({...state, selectedResponseIndex: Number(value)})
+  }
+  const handleResponseDescription: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+
+  }
   const sendRequest = () => {
     console.log(
       method,
-      selectedUrl + paths + params + queries,
+      selectedUrl + path + extractParams(params) + extractQueries(queries),
       headers,
       body,
       { name, summary, operationId, description },
-      tags
+      tags,
+      authd
     );
   };
+
+  const handleEndpointSelection: React.MouseEventHandler<HTMLDivElement> = (
+    e
+  ) => {
+    setState({...state, selectedResponseIndex: 0})
+    const { id } = e.currentTarget;
+    dispatch(setSelectedEndpoint({ index: Number(id) }));
+  };
+
+  const addNewEndpoint = () => {
+    const newEndpoint: RequestConfiguration = {
+      baseUrl: selectedUrl,
+      headers: {},
+      requestQueries: [],
+      requestParams: [],
+      authd: {} as Authd,
+      method: "GET",
+      path: "",
+      requestBody: {},
+      description: "",
+      tags: [],
+      summary: "",
+      operationId: "",
+      name: "",
+      responses: []
+    };
+
+    dispatch(setNewEnpoint({endpoint: newEndpoint}))
+  };
+
+  const removeEndpoint = (index: number) => {
+    dispatch(deleteEndpoint({index}))
+  } 
+
+  // useEffect(() => {
+  //   return setState((state) => {
+  //     return {...state, baseUrl: selectedUrl}
+  //   });
+  // }, [selectedUrl, state])
   return (
     <div>
       <div className="fr2 ov">
         <div className="flex15">
-          <select onChange={handleMethodChange}>
-            <option>GET</option>
-            <option>POST</option>
-            <option>PUT</option>
-            <option>PATCH</option>
-            <option>DELETE</option>
+          <select value={method} onChange={handleMethodChange}>
+            <option value={"get"}>GET</option>
+            <option value={"post"}>POST</option>
+            <option value={"put"}>PUT</option>
+            <option value={"patch"}>PATCH</option>
+            <option value={"delete"}>DELETE</option>
           </select>
         </div>
         <div className="flex70">
           <input
-            value={selectedUrl + paths + params + queries}
+            value={
+              selectedUrl +
+              path +
+              extractParams(params) +
+              extractQueries(queries)
+            }
             readOnly
             className="fw"
           />
@@ -146,9 +205,41 @@ function Paths() {
 
       <div className="elementContainer ov">{pathElements[state.active]}</div>
 
-      <div className="elementContainer ov"></div>
-      <div className="ov fr1 mt">
-            {endpoints.map((endpoint: any) => <div>{endpoint}</div>)}
+      <div className="elementContainer ov">
+        <div>
+          <select onChange={handleResponseCodeSelection}>
+              {
+                responses.map((response, index) => {
+                  return (
+                    <option key={index} value={`${index}`}>
+                      {response.code}
+                    </option>
+                  )
+                })
+              }
+          </select>
+        </div>
+        <div><input onChange={handleResponseDescription} value={responses[state.selectedResponseIndex]?.description || ""} placeholder="description" /></div>
+        <textarea className="responseTextArea" readOnly value={JSON.stringify(responses[state.selectedResponseIndex]?.res||{}, null, "  ")}></textarea>
+      </div>
+
+      <div className="frpath mt">
+        <div className="ov fr1">
+          {endpoints.map((endpoint: any, i: number) => (
+            <div className="frpath">
+              <button onClick={()=> removeEndpoint(i)} className="remove-button">X</button>
+              <div
+              className="pointa"
+              key={i}
+              id={`${i}`}
+              onClick={handleEndpointSelection}
+            >
+              {endpoint}
+            </div>
+            </div>
+          ))}
+        </div>
+        <div onClick={addNewEndpoint} className="pointa">+</div>
       </div>
     </div>
   );

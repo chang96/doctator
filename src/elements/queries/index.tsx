@@ -1,42 +1,42 @@
 import "../elements.css";
 import { useState } from "react";
 import { setQueries } from "../../slices/request";
-import { AppDispatch } from "../../store/store";
-import { useDispatch } from "react-redux";
-type Queries = { fieldName: string; value: string };
-type K = keyof Queries;
+import { AppDispatch, RootState } from "../../store/store";
+import { useDispatch, useSelector } from "react-redux";
 
 function QueriesFunc() {
-  const [state, setState] = useState<{ queries: Queries[] }>({ queries: [] });
+  const {
+    requestQueries,
+  } = useSelector((state: RootState) => state.requestConfig.endpoints[state.requestConfig.selectedEndpoint]);
+
+  const [state, setState] = useState<{ queries: Queries[] }>({ queries: requestQueries || [] });
   const dispatch: AppDispatch = useDispatch();
   const addQuery = () => {
     setState((state) => ({
-      queries: [...state.queries, { fieldName: "", value: "" }],
+      queries: [...state.queries, { name: "", value: "", staticField: []}],
     }));
+    dispatch(setQueries({ queries: [...state.queries, { name: "", value: "", staticField: []}] }));
   };
   const removeQuery = (index: number) => {
     const newQueries = [...state.queries];
     newQueries.splice(index, 1);
     setState({ queries: newQueries });
-    const q =
-      "?" + [...newQueries].map((x) => x.fieldName + "=" + x.value).join("&");
-    dispatch(setQueries({ queries: q }));
+
+    dispatch(setQueries({ queries: [...newQueries] }));
   };
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name, value } = e.target;
     const [field, index] = name.split("-");
     state.queries[Number(index)][field as K] = value;
     setState((state) => ({ queries: [...state.queries] }));
-    const q =
-      "?" +
-      [...state.queries].map((x) => x.fieldName + "=" + x.value).join("&");
-    dispatch(setQueries({ queries: q }));
+    
+    dispatch(setQueries({ queries: [...state.queries] }));
   };
 
   return (
     <div className="c">
       <div className="fc">
-        {state.queries.map((params, index) => {
+        {(requestQueries || []).map((params, index) => {
           return (
             <div style={{ margin: "5px" }} key={index}>
               <button
@@ -50,8 +50,8 @@ function QueriesFunc() {
                 <div>
                   <input
                     onChange={handleChange}
-                    name={`fieldName-${index}`}
-                    value={params.fieldName}
+                    name={`name-${index}`}
+                    value={params.name}
                     type="text"
                   />
                 </div>

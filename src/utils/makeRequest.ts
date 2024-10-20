@@ -16,7 +16,7 @@ async function makeRequest(requestData: RequestData) {
     }
 }
 
-function formQueries(queries?: Queries) {
+function formQueries(queries?: MrQueries) {
     if(!queries) return ''
     return `?${queries.map(query => Object.keys(query).map(key => `${key}=${encodeURIComponent(query[key])}`).join('&')).join('&')}`
 }
