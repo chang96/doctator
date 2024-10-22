@@ -1,0 +1,70 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "How to Use This Generator",
+    "version": "3.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    },
+    {
+      "url": "http://localhost:8081"
+    }
+  ],
+  "paths": {},
+  "components": {
+    "schemas": {
+      "BaseResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "x-api-key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      },
+      "x-api-user": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-user"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "x-api-key": [],
+      "x-api-user": []
+    },
+    {
+      "x-api-key": []
+    },
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "ping",
+      "description": "pinger endpoints"
+    },
+    {
+      "name": "authdping",
+      "description": "authdping endpoints"
+    }
+  ]
+}

@@ -13,7 +13,6 @@ const configSlice = createSlice({
   initialState,
   reducers: {
     genJson(state, action) {
-      console.log(action)
       if(action.payload.generatedJson) state.generatedJson = action.payload.generatedJson
       else state.generatedJson = {}
     },

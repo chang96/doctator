@@ -17,11 +17,9 @@ function AuthSelection() {
     (state: RootState) =>
       state.requestConfig.endpoints[state.requestConfig.selectedEndpoint]
   );
-  console.log(authd);
   const dispatch: AppDispatch = useDispatch();
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { value } = e.target;
-    console.log(value)
     dispatch(setAuthd({ authd: { use: !authd.use, position: !authd.use ? Number(value)+1 : Infinity  } }));
 
     const sec = securityArr[Number(value)];
@@ -36,7 +34,6 @@ function AuthSelection() {
   return (
     <div className="ov">
       {securityArr.map((sec, index) => {
-        console.log(sec);
         return (
           <div className="m2 fr" key={index}>
             <div>

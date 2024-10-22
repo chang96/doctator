@@ -66,7 +66,6 @@ function SecuritySchemes() {
 
       <div>
         {state.securityScheme.map((sec, index) => {
-          console.log(sec.type)
           if (sec.type === 'http') {
             sec.description = 'unused'
             sec.in = 'unused'

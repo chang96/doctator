@@ -66,7 +66,6 @@ function Paths() {
   const endpoints = endpointsArr.map(
     (x: any) => `${x.method} ${x.path}`.toLowerCase()
   );
-  console.log(endpoints)
 
   const [state, setState] = useState<{
     active: PathElementsKey;
@@ -226,7 +225,7 @@ function Paths() {
       <div className="frpath mt">
         <div className="ov fr1">
           {endpoints.map((endpoint: any, i: number) => (
-            <div className="frpath">
+            <div key={i} className="frpath">
               <button onClick={()=> removeEndpoint(i)} className="remove-button">X</button>
               <div
               className="pointa"

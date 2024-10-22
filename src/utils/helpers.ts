@@ -1,3 +1,5 @@
+import configjson from '../sampleData/config.json'
+import pathsjson from '../sampleData/paths.json'
 export const isLocalhost = () =>
   Boolean(
     window.location.hostname === "localhost" ||
@@ -23,4 +25,12 @@ export const extractQueries = (queries?: Queries[]) => {
     return acc + `${query.name}=${query.value}&`
   }, "").slice(0, -1)
   return querystr
+}
+
+export const getSampleData = (selector: "/samplepath" | "/sampleconfig") => {
+  const c = {
+    "/samplepath": pathsjson,
+    "/sampleconfig": configjson
+  }
+  return c[selector]
 }

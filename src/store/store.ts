@@ -7,8 +7,8 @@ const store = configureStore({
   reducer: {
     modal: modalReducer,
     config: configReducer,
+    selectedEndpoint: selectedEndpointReducer,
     requestConfig: requestConfigReducer,
-    selectedEndpoint: selectedEndpointReducer
   },
 });
 

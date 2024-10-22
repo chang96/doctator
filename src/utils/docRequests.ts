@@ -1,15 +1,16 @@
+import { getSampleData } from "./helpers";
 import { makeRequest } from "./makeRequest";
 
 async function getSampleTemplates(path: string = "/"){
     try {
-        return await makeRequest({
-            method: 'get',
-            baseUrl: 'https://gen-doc.sandymoon.com.ng',
-            path,
+        // return await makeRequest({
+        //     method: 'get',
+        //     baseUrl: 'https://gen-doc.sandymoon.com.ng',
+        //     path,
 
-        })
+        // })
+        return getSampleData(path as "/samplepath" | "/sampleconfig")
     } catch (error) {
-        console.log(error)
         throw new Error("could not get file")
     }
 }

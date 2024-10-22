@@ -1,0 +1,122 @@
+{
+  "endpoints": [
+    {
+      "name": "ping",
+      "path": "/ping",
+      "method": "get",
+      "summary": "get ping",
+      "operationId": "get ping",
+      "tags": ["ping"],
+      "description": "ping endpoint",
+      "requestParams": ["pinger.0f246a9c8a81d47ef1"],
+      "requestQueries": [
+        {
+          "name": "queryvalue",
+          "value": "val"
+        },
+        {
+          "name": "queryvaluewithoption",
+          "value": "option1",
+          "staticField": ["option1", "option2"]
+        }
+      ],
+      "requestBody": null,
+      "authd": {
+        "use": false
+      },
+      "responses": [
+        {
+          "code": "200",
+          "res": {
+            "name": "get ping",
+            "details": {
+              "tags": ["ping"],
+              "description": "ping endpoint"
+            }
+          },
+          "description": "get ping successful"
+        },
+        {
+          "code": "400",
+          "res": {
+            "name": "",
+            "details": {
+              "tags": "",
+              "description": ""
+            }
+          },
+          "description": "get ping failed"
+        }
+      ]
+    },
+    {
+      "name": "ping",
+      "path": "/ping",
+      "method": "post",
+      "summary": "post ping",
+      "operationId": "post ping",
+      "tags": ["ping"],
+      "description": "ping endpoint",
+      "requestParams": [],
+      "requestQueries": [],
+      "requestBody": {
+        "name": "ping",
+        "manyoptions": "option1:option2",
+        "singleoption": "option1:.",
+        "objectoption": {
+          "name": "ping:pong"
+        },
+        "arrayoption": ["ping", "pingpong"],
+        "stringoption": "pingpong"
+      },
+      "authd": {
+        "use": true,
+        "position": 3
+      },
+      "responses": [
+        {
+          "code": "200",
+          "res": {
+            "name": "post ping",
+            "details": {
+              "tags": ["ping"],
+              "description": "ping endpoint"
+            }
+          },
+          "description": "get ping successful"
+        }
+      ]
+    },
+    {
+      "name": "authedping",
+      "path": "/authdping",
+      "method": "put",
+      "summary": "authd ping",
+      "operationId": "authd ping",
+      "tags": ["authdping"],
+      "description": "auth ping endpoint",
+      "requestParams": [],
+      "requestQueries": [],
+      "requestBody": {
+        "name": "authdping",
+        "details": {
+          "tags": ["authping"],
+          "description": "auth ping endpoint"
+        }
+      },
+      "authd": {
+        "use": true,
+        "position": 1
+      },
+      "responses": [
+        {
+          "code": "200",
+          "res": {
+            "name": "auth ping"
+          },
+          "description": "auth ping response"
+        }
+      ]
+    }
+  ]
+}
