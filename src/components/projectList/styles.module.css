@@ -1,0 +1,10 @@
+.f {
+    display: flex;
+    flex-direction: column;
+    width: 15%;
+    align-items: center;
+}
+
+.pointa {
+    cursor: pointer;
+}
