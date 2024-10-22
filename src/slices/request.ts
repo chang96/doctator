@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getProject, setProjectByProjectName } from "../utils/localstorageFuncs";
+import { deleteProject, getProject, setProjectByProjectName } from "../utils/localstorageFuncs";
 import { getSampleData } from "../utils/helpers";
+import newConfig from "../sampleData/newConfig.json"
+import newPaths from "../sampleData/newPaths.json"
 
 const projects = {
   defaultProject: {
@@ -14,9 +16,10 @@ if (!window.localStorage.getItem('projects')) window.localStorage.setItem('proje
 
 type Servers = { url: string };
 
+const allProjects = JSON.parse(window.localStorage.getItem('projects')|| "{}")
 const projectName = "defaultProject";
 
-const def= getProject(projectName);
+const def = getProject(projectName);
 
 if(projectName === "defaultProject" && !def.set){
   const c = getSampleData("/sampleconfig")
@@ -36,7 +39,7 @@ const endpoints = (projectConfiguration.paths.endpoints as RequestConfiguration[
     ...endpoint, ...(!endpoint.baseUrl && {baseUrl: serverArr[0].url}), headers:{"content-type": "application/json"}
   }
 })
-const initialState: {endpoints: RequestConfiguration[], selectedEndpoint: number, selectedProjectName: string} = {endpoints, selectedEndpoint: 0, selectedProjectName: "defaultProject"}
+const initialState: {endpoints: RequestConfiguration[], selectedEndpoint: number, selectedProjectName: string, projectList: string[]} = {endpoints, selectedEndpoint: 0, selectedProjectName: "defaultProject", projectList: Object.keys(allProjects)}
 // {
 //   baseUrl: "",
 //   headers: {},
@@ -151,10 +154,39 @@ const requestConfigurationSlice = createSlice({
       state.endpoints.splice(action.payload.index, 1)
       if(state.selectedEndpoint >= action.payload.index) state.selectedEndpoint--
       removeEndpointFromLocalStorage(action.payload.index)
+    },
+    setSelectedProjectName(state, action) {
+      const selectedProject = getProject(action.payload.projectName)
+      const serverArr: Servers[]  = [...selectedProject.config.servers] 
+      const endpoints = (selectedProject.paths.endpoints as RequestConfiguration[]).map(endpoint => {
+        return {
+          ...endpoint, ...(!endpoint.baseUrl && {baseUrl: serverArr[0].url}), headers:{"content-type": "application/json"}
+        }
+      })
+      state.selectedEndpoint = 0
+      state.endpoints = endpoints
+      state.selectedProjectName = action.payload.projectName
+    },
+    addProjectList(state, action) {
+      const newProjectName = action.payload.newProject
+      state.projectList.push(newProjectName)
+      const newProjectObject = {
+        [newProjectName]: {
+          config: newConfig,
+          paths: newPaths,
+          set: true
+        }
+      }
+      setProjectByProjectName(newProjectName, newProjectObject[newProjectName])
+    },
+    removeProjectFromList(state, action) {
+      const projectName = state.projectList[action.payload.index]
+      state.projectList.splice(action.payload.index, 1)
+      deleteProject(projectName)
     }
   },
 });
 
-export const { setBaseUrl, setMethod, setPaths, setParams, setQueries, setHeaders, setBody, setDescriptionDetails, setTag, setSelectedEndpoint, setNewEnpoint, setAuthd, deleteEndpoint} = requestConfigurationSlice.actions;
+export const { setBaseUrl, setMethod, setPaths, setParams, setQueries, setHeaders, setBody, setDescriptionDetails, setTag, setSelectedEndpoint, setNewEnpoint, setAuthd, deleteEndpoint, addProjectList, removeProjectFromList, setSelectedProjectName} = requestConfigurationSlice.actions;
 
 export default requestConfigurationSlice.reducer;
