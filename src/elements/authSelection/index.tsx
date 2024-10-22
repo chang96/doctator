@@ -6,7 +6,7 @@ import { AppDispatch, RootState } from "../../store/store";
 type SecurityType = Record<string, boolean | Array<any>>;
 
 function AuthSelection() {
-  const projectName = "defaultProject";
+  const {selectedProjectName: projectName} = useSelector((state: RootState) => state.requestConfig)
   const projectConfiguration = getProject(projectName);
   const securityArr = projectConfiguration.config.security as SecurityType[];
   let { authd } = useSelector(

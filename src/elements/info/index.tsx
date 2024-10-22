@@ -1,9 +1,11 @@
 import { useState } from "react"
 import { getProject, setProjectByProjectName } from "../../utils/localstorageFuncs"
 import "../elements.css"
+import { useSelector } from "react-redux"
+import { RootState } from "../../store/store"
 
 function Info() {
-    const projectName = 'defaultProject'
+    const {selectedProjectName: projectName} = useSelector((state: RootState) => state.requestConfig)
     const projectConfiguration = getProject(projectName)
     const {title, version} = projectConfiguration.config.info
     const [state, setState] = useState({title, version })

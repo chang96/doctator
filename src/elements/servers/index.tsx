@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import "../elements.css";
 import { getProject, setProjectByProjectName } from "../../utils/localstorageFuncs";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 type Servers = { url: string };
 function ServersFunc() {
-  const projectName = 'defaultProject'
+  const {selectedProjectName: projectName} = useSelector((state: RootState) => state.requestConfig)
   const projectConfiguration = getProject(projectName)
   const serversArr = projectConfiguration.config.servers as Servers[]
   const [state, setState] = useState<{ servers: Servers[] }>({ servers: [...serversArr] });

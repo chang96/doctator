@@ -8,7 +8,8 @@ import { setBaseUrl } from "../../slices/request";
 type Servers = { url: string };
 
 function Url (){
-    const projectName = "defaultProject";
+    const {selectedProjectName: projectName} = useSelector((state: RootState) => state.requestConfig)
+
     const projectConfiguration = getProject(projectName)
     // const serverArr = [{url: "select base url"}, ...projectConfiguration.config.servers] as Servers[]
     const serverArr = [...projectConfiguration.config.servers] as Servers[]

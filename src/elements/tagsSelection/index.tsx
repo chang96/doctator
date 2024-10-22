@@ -7,7 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 type Tag = { name: string; description: string };
 
 function TagsSelection () {
-    const projectName = 'defaultProject'
+    const {selectedProjectName: projectName} = useSelector((state: RootState) => state.requestConfig)
+
     const projectConfiguration = getProject(projectName)
     const tagsArr = projectConfiguration.config.tags as Tag[]
 

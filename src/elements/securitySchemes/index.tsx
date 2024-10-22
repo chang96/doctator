@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import "../elements.css";
 import { getProject, setProjectByProjectName } from "../../utils/localstorageFuncs";
+import { RootState } from "../../store/store";
+import { useSelector } from "react-redux";
 type Sec = { schemeName: string; type: string; in?: string; name?: string; description?: string; bearerFormat?: string; scheme?: string };
 type F = keyof Sec;
 function SecuritySchemes() {
-  const projectName = 'defaultProject'
+  const {selectedProjectName: projectName} = useSelector((state: RootState) => state.requestConfig)
   const projectConfiguration = getProject(projectName)
   const securitySchemesObj = (projectConfiguration.config.components.securitySchemes as Record<string, Omit<Sec, 'schemeName'>>)
   const securitySchemesArr = Object.entries(securitySchemesObj).map(([name, sec]) => ({...sec, schemeName: name }));

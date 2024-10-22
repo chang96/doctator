@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import '../elements.css'
 import { getProject, setProjectByProjectName } from "../../utils/localstorageFuncs";
+import { RootState } from "../../store/store";
+import { useSelector } from "react-redux";
 
 type Tag = { name: string; description: string };
 function TagFunc() {
-  const projectName = 'defaultProject'
+  const {selectedProjectName: projectName} = useSelector((state: RootState) => state.requestConfig)
   const projectConfiguration = getProject(projectName)
   const tagsArr = projectConfiguration.config.tags as Tag[]
 

@@ -4,9 +4,11 @@ import {
   getProject,
   setProjectByProjectName,
 } from "../../utils/localstorageFuncs";
+import { RootState } from "../../store/store";
+import { useSelector } from "react-redux";
 type SecurityType = Record<string, boolean | Array<any>>;
 function Security() {
-  const projectName = "defaultProject";
+  const {selectedProjectName: projectName} = useSelector((state: RootState) => state.requestConfig)
   const projectConfiguration = getProject(projectName);
   const securityArr = projectConfiguration.config.security as SecurityType[];
   const securityComponents = projectConfiguration.config.components
