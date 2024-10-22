@@ -1,0 +1,32 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+      "title": "",
+      "version": ""
+    },
+    "servers": [
+      {
+        "url": ""
+      }
+    ],
+    "paths": {},
+    "components": {
+      "schemas": {
+        "BaseResponse": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object"
+            },
+            "message": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "securitySchemes": {}
+    },
+    "security": [],
+    "tags": []
+  }
+  

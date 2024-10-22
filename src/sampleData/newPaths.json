@@ -1,0 +1,27 @@
+{
+    "endpoints": [
+      {
+        "name": "",
+        "path": "",
+        "method": "get",
+        "summary": "",
+        "operationId": "",
+        "tags": [],
+        "description": "",
+        "requestParams": [],
+        "requestQueries": [],
+        "requestBody": null,
+        "authd": {
+          "use": false
+        },
+        "responses": [
+          {
+            "code": "200",
+            "res": {},
+            "description": ""
+          }
+        ]
+      }
+    ]
+  }
+  
