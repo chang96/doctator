@@ -219,7 +219,7 @@ function Paths() {
           </select>
         </div>
         <div><input onChange={handleResponseDescription} value={responses[state.selectedResponseIndex]?.description || ""} placeholder="description" /></div>
-        <textarea className="responseTextArea" readOnly value={JSON.stringify(responses[state.selectedResponseIndex]?.res||{}, null, "  ")}></textarea>
+        <textarea className="responseTextArea txtarea" readOnly value={JSON.stringify(responses[state.selectedResponseIndex]?.res||{}, null, "  ")}></textarea>
       </div>
 
       <div className="frpath mt">
