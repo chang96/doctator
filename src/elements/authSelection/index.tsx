@@ -19,17 +19,45 @@ function AuthSelection() {
   );
   const dispatch: AppDispatch = useDispatch();
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    const { value } = e.target;
-    dispatch(setAuthd({ authd: { use: !authd.use, position: !authd.use ? Number(value)+1 : Infinity  } }));
+    // const { value } = e.target;
+    // dispatch(setAuthd({ authd: { use: !authd.use, position: !authd.use ? Number(value)+1 : Infinity  } }));
 
-    const sec = securityArr[Number(value)];
-    const newSec = {} as Record<string, string>;
-    for (const k in sec) {
-      newSec[k] = "";
-    }
-    headers = { ...newSec, ...headers };
-    dispatch(setHeaders({ headers }));
+    // const sec = securityArr[Number(value)];
+    // const newSec = {} as Record<string, string>;
+    // for (const k in sec) {
+    //   newSec[k] = "";
+    // }
+    // headers = { ...newSec, ...headers };
+    // dispatch(setHeaders({ headers }));
   };
+
+  const handleClick: React.MouseEventHandler<HTMLInputElement> = (e) =>{
+    const {value} = e.currentTarget
+    let [index, isChecked] = value.split('-') 
+    const isCheckedBool = isChecked === "true" ? true : false
+    if(!isCheckedBool) {
+      dispatch(setAuthd({ authd: { use: true, position: Number(index)+1  } }));
+
+      const sec = securityArr[Number(index)];
+      const newSec = {} as Record<string, string>;
+      for (const k in sec) {
+        newSec[k] = "";
+      }
+      headers = { ...newSec, ...headers };
+      dispatch(setHeaders({ headers }));
+    } else {
+      dispatch(setAuthd({ authd: { use: false, position: Infinity  } }));
+
+      const sec = securityArr[Number(index)];
+      const newSec = {} as Record<string, string>;
+      for (const k in sec) {
+        if(headers && headers[k] && newSec[k] === headers[k]){
+          delete headers[k]
+        };
+      }
+      dispatch(setHeaders({ headers }));
+    }
+}
 
   return (
     <div className="ov">
@@ -44,7 +72,8 @@ function AuthSelection() {
                 name="securitySelection"
                 type="radio"
                 onChange={handleChange}
-                value={index}
+                onClick={handleClick}
+                value={`${index}-${authd?.use && authd?.position - 1 === index}`}
               />
             </div>
             <div>

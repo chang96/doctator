@@ -9,10 +9,10 @@ import PathText from "../../elements/paths";
 import Queries from "../../elements/queries";
 import Url from "../../elements/url";
 import TagsSelection from "../../elements/tagsSelection";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
-import { setMethod, setNewEnpoint, setSelectedEndpoint, deleteEndpoint } from "../../slices/request";
+import { setMethod, setNewEnpoint, setSelectedEndpoint, deleteEndpoint, setSelectedProjectName } from "../../slices/request";
 import { extractParams, extractQueries } from "../../utils/helpers";
 
 type PathElements = {
@@ -63,6 +63,8 @@ function Paths() {
   );
 
   const endpointsArr = useSelector((state: RootState) => state.requestConfig.endpoints)
+  const selectedProjectName = useSelector((state: RootState) => state.requestConfig.selectedProjectName)
+
   const endpoints = endpointsArr.map(
     (x: any) => `${x.method} ${x.path}`.toLowerCase()
   );
@@ -136,11 +138,9 @@ function Paths() {
     dispatch(deleteEndpoint({index}))
   } 
 
-  // useEffect(() => {
-  //   return setState((state) => {
-  //     return {...state, baseUrl: selectedUrl}
-  //   });
-  // }, [selectedUrl, state])
+  useEffect(() => {
+    dispatch(setSelectedProjectName({projectName: selectedProjectName}))
+  }, [dispatch, selectedProjectName])
   return (
     <div>
       <div className="fr2 ov">

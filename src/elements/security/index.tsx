@@ -30,23 +30,23 @@ function Security() {
   const addSecurity = () => {
     const newSecurity: SecurityType = reducedSecArr;
     setState({ security: [...state.security, newSecurity] });
-    const stateCopy = JSON.parse(
-      JSON.stringify(newSecurity)
-    ) as SecurityType[];
+    // const stateCopy = JSON.parse(
+    //   JSON.stringify([...state.security, newSecurity])
+    // ) as SecurityType[];
+    // console.log(stateCopy)
+    // // stateCopy[Number(index)][field] ? stateCopy[Number(index)][field] = false : stateCopy[Number(index)][field] = []
+    // const delUnused = stateCopy.map((x) => {
+    //   for (const k in x) {
+    //     if (!x[k]) {
+    //       delete x[k];
+    //     }
+    //   }
 
-    // stateCopy[Number(index)][field] ? stateCopy[Number(index)][field] = false : stateCopy[Number(index)][field] = []
-    const delUnused = stateCopy.map((x) => {
-      for (const k in x) {
-        if (!x[k]) {
-          delete x[k];
-        }
-      }
+    //   return x;
+    // });
+    // projectConfiguration.config.security = stateCopy;
 
-      return x;
-    });
-    projectConfiguration.config.security = delUnused;
-
-    setProjectByProjectName(projectName, projectConfiguration);
+    // setProjectByProjectName(projectName, projectConfiguration);
   };
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name } = e.target;
