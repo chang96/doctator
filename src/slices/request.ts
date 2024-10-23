@@ -184,7 +184,7 @@ const requestConfigurationSlice = createSlice({
     },
     setBody(state, action) {
       state.endpoints[state.selectedEndpoint].requestBody = action.payload.body;
-      // saveEndpointsInLocalStorage(state.selectedEndpoint, "requestBody", action.payload.body, state.selectedProjectName)
+      saveEndpointsInLocalStorage(state.selectedEndpoint, "requestBody", action.payload.body, state.selectedProjectName)
     },
     setDescriptionDetails(state, action) {
       state.endpoints[state.selectedEndpoint].description =
