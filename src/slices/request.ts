@@ -298,6 +298,15 @@ const requestConfigurationSlice = createSlice({
       state.projectList.splice(action.payload.index, 1);
       deleteProject(projectName);
     },
+    setResponses(state, action) {
+      state.endpoints[state.selectedEndpoint].responses = action.payload.responses;
+      saveEndpointsInLocalStorage(
+        state.selectedEndpoint,
+        "responses",
+        action.payload.responses,
+        state.selectedProjectName
+      );
+    }
   },
 });
 
@@ -318,6 +327,7 @@ export const {
   addProjectList,
   removeProjectFromList,
   setSelectedProjectName,
+  setResponses
 } = requestConfigurationSlice.actions;
 
 export default requestConfigurationSlice.reducer;

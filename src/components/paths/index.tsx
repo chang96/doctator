@@ -12,7 +12,7 @@ import TagsSelection from "../../elements/tagsSelection";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
-import { setMethod, setNewEnpoint, setSelectedEndpoint, deleteEndpoint, setSelectedProjectName } from "../../slices/request";
+import { setMethod, setNewEnpoint, setSelectedEndpoint, deleteEndpoint, setSelectedProjectName, setResponses } from "../../slices/request";
 import { extractParams, extractQueries } from "../../utils/helpers";
 
 type PathElements = {
@@ -86,12 +86,14 @@ function Paths() {
     const { value } = e.target;
     dispatch(setMethod({ method: value }));
   };
-  const handleResponseCodeSelection: React.ChangeEventHandler<HTMLSelectElement> =(e) => {
-    let {value} = e.target
-    setState({...state, selectedResponseIndex: Number(value)})
+  const handleResponseCodeSelection = (index: number) => {
+    setState({...state, selectedResponseIndex: Number(index)})
   }
   const handleResponseDescription: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-
+    const { value } = e.target;
+    const responseCopy = JSON.parse(JSON.stringify(responses))
+    responseCopy[state.selectedResponseIndex].description = value
+    dispatch(setResponses({responses: responseCopy}))
   }
   const sendRequest = () => {
     console.log(
@@ -205,18 +207,16 @@ function Paths() {
       <div className="elementContainer ov">{pathElements[state.active]}</div>
 
       <div className="elementContainer ov">
-        <div>
-          <select onChange={handleResponseCodeSelection}>
+        <div className="fr">
               {
                 responses.map((response, index) => {
                   return (
-                    <option key={index} value={`${index}`}>
+                    <div onClick={()=> handleResponseCodeSelection(index)} className="ml pointa" key={index}>
                       {response.code}
-                    </option>
+                    </div>
                   )
                 })
               }
-          </select>
         </div>
         <div><input onChange={handleResponseDescription} value={responses[state.selectedResponseIndex]?.description || ""} placeholder="description" /></div>
         <textarea className="responseTextArea txtarea" readOnly value={JSON.stringify(responses[state.selectedResponseIndex]?.res||{}, null, "  ")}></textarea>
@@ -238,7 +238,7 @@ function Paths() {
             </div>
           ))}
         </div>
-        <div onClick={addNewEndpoint} className="pointa">+</div>
+        <div onClick={addNewEndpoint} className="pointa add-button">+</div>
       </div>
     </div>
   );
