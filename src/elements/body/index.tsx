@@ -7,7 +7,12 @@ function Body (){
     const {
         requestBody: body
       } = useSelector((state: RootState) => state.requestConfig.endpoints[state.requestConfig.selectedEndpoint]);
-    const stringifiedBody = JSON.stringify(body, null, "   ")
+    let stringifiedBody = "" //= JSON.stringify(body, null, "   ")
+    if (typeof body === "object") {
+        stringifiedBody = JSON.stringify(body, null, "   ") || ""
+    } else {
+        stringifiedBody = body || ""
+    }
     const [state, setState] = useState<{jsonValue: string}>({jsonValue: stringifiedBody})
     const dispatch: AppDispatch = useDispatch()
     const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
@@ -30,11 +35,9 @@ function Body (){
     useEffect(()=> {
         setState({jsonValue: stringifiedBody})
     }, [stringifiedBody])
-    return <div className="fh fw">
-        <textarea value={state.jsonValue} onChange={handleChange} className="fw fh" name="body">
+    return <textarea value={state.jsonValue} onChange={handleChange} className="fw fh txtarea" name="body">
 
         </textarea>
-    </div>
 }
 
 export default Body
