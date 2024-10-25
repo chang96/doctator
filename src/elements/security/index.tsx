@@ -24,30 +24,30 @@ function Security() {
     return { ...reducedSecArr, ...sec };
   });
 
-  const [state, setState] = useState<{ security: SecurityType[] }>({
+  let secWithValArr = securityArr.map((sec, i) => {
+    return projectConfiguration.config.securityWithValues[i] || sec
+  })
+
+  secWithValArr = secWithValArr.map((x: any) => {
+    for (const k in x) {
+      if (typeof x[k] !== 'string') {
+        x[k] = ""
+      }
+    }
+    return x;
+  })
+  console.log(secWithValArr)
+
+  const [state, setState] = useState<{ security: SecurityType[], secWithValArr: Record<string, any>[] }>({
     security: [...transformedSecurityArr],
+    secWithValArr: secWithValArr
   });
+  console.log(state.secWithValArr)
   const addSecurity = () => {
     const newSecurity: SecurityType = reducedSecArr;
-    setState({ security: [...state.security, newSecurity] });
-    // const stateCopy = JSON.parse(
-    //   JSON.stringify([...state.security, newSecurity])
-    // ) as SecurityType[];
-    // console.log(stateCopy)
-    // // stateCopy[Number(index)][field] ? stateCopy[Number(index)][field] = false : stateCopy[Number(index)][field] = []
-    // const delUnused = stateCopy.map((x) => {
-    //   for (const k in x) {
-    //     if (!x[k]) {
-    //       delete x[k];
-    //     }
-    //   }
-
-    //   return x;
-    // });
-    // projectConfiguration.config.security = stateCopy;
-
-    // setProjectByProjectName(projectName, projectConfiguration);
+    setState({ ...state, security: [...state.security, newSecurity] });
   };
+
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name } = e.target;
     const [field, , index] = name.split("**");
@@ -57,12 +57,11 @@ function Security() {
     } else if (state.security[Number(index)][field]) {
       state.security[Number(index)][field] = false;
     }
-    setState({ security: [...state.security] });
+    setState({ ...state, security: [...state.security] });
     const stateCopy = JSON.parse(
       JSON.stringify(state.security)
     ) as SecurityType[];
 
-    // stateCopy[Number(index)][field] ? stateCopy[Number(index)][field] = false : stateCopy[Number(index)][field] = []
     const delUnused = stateCopy.map((x) => {
       for (const k in x) {
         if (!x[k]) {
@@ -76,15 +75,15 @@ function Security() {
 
     setProjectByProjectName(projectName, projectConfiguration);
   };
+
   const deleteSecurity = (index: number) => {
     const newSecurity = [...state.security];
     newSecurity.splice(index, 1);
-    setState({ security: newSecurity });
+    setState({ ...state, security: newSecurity });
     const stateCopy = JSON.parse(
       JSON.stringify(newSecurity)
     ) as SecurityType[];
 
-    // stateCopy[Number(index)][field] ? stateCopy[Number(index)][field] = false : stateCopy[Number(index)][field] = []
     const delUnused = stateCopy.map((x) => {
       for (const k in x) {
         if (!x[k]) {
@@ -98,6 +97,23 @@ function Security() {
 
     setProjectByProjectName(projectName, projectConfiguration);
   };
+
+  const handleSetAuthenticationHeaderValue: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const {name, value} = e.target
+    const [keyName, index] = name.split('**')
+    const sec = projectConfiguration.config.security as SecurityType[]
+    const secCopy = JSON.parse(JSON.stringify(sec))
+
+    const secWithValArr = projectConfiguration.config.securityWithValues || secCopy
+    console.log(secWithValArr, secCopy)
+    if (!secWithValArr[Number(index)]) secWithValArr[Number(index)] ={}
+    if (!secWithValArr[Number(index)][keyName]) secWithValArr[Number(index)][keyName] = ""
+    secWithValArr[Number(index)][keyName] = value
+    projectConfiguration.config.securityWithValues = secWithValArr
+    console.log(projectConfiguration.config)
+    setProjectByProjectName(projectName, projectConfiguration)
+    setState({...state, secWithValArr: secWithValArr})
+  }
   return (
     <div className="c">
       <div>
@@ -117,15 +133,18 @@ function Security() {
                 X
               </button>
               {secArr.map(([k, v], j) => {
+              
+
                 return (
-                  <div key={j} className="fr">
+                  <div key={j} className="fr msmall">
                     <input
                       onChange={(e) => handleChange(e)}
                       defaultChecked={!!v}
                       type="checkbox"
                       name={`${k}**${j}**${index}`}
                     />
-                    <div>{k}</div>
+                    <div className="w100">{k}</div>
+                    <input onChange={handleSetAuthenticationHeaderValue} value={state.secWithValArr[index] ? state.secWithValArr[index][k] : "" } name={`${k}**${index}`} type="text" placeholder="value" />
                   </div>
                 );
               })}

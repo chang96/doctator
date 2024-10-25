@@ -16,6 +16,9 @@
 .m2 {
   margin-top: 10px;
 }
+.msmall {
+  margin-top: 2px;
+}
 
 .ov {
   overflow-y: auto;
@@ -27,6 +30,9 @@
 
 .fh {
   height: calc(100% - 4px);
+}
+.w100 {
+  width: 100px;
 }
 
 .txtarea {
