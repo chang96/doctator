@@ -17,13 +17,14 @@ async function getSampleTemplates(path: string = "/"){
 
 async function generateJsonFile(config: any, paths: any){
     try {
-        return await makeRequest({
+        const res = await makeRequest({
             method: 'POST',
             baseUrl: 'https://gen-doc.sandymoon.com.ng',
             path: "/generate",
             payload: {config, paths},
             headers: {}
         })
+        return res.data
     } catch (error) {
         
     }

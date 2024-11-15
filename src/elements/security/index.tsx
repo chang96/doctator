@@ -36,13 +36,11 @@ function Security() {
     }
     return x;
   })
-  console.log(secWithValArr)
 
   const [state, setState] = useState<{ security: SecurityType[], secWithValArr: Record<string, any>[] }>({
     security: [...transformedSecurityArr],
     secWithValArr: secWithValArr
   });
-  console.log(state.secWithValArr)
   const addSecurity = () => {
     const newSecurity: SecurityType = reducedSecArr;
     setState({ ...state, security: [...state.security, newSecurity] });
@@ -105,12 +103,10 @@ function Security() {
     const secCopy = JSON.parse(JSON.stringify(sec))
 
     const secWithValArr = projectConfiguration.config.securityWithValues || secCopy
-    console.log(secWithValArr, secCopy)
     if (!secWithValArr[Number(index)]) secWithValArr[Number(index)] ={}
     if (!secWithValArr[Number(index)][keyName]) secWithValArr[Number(index)][keyName] = ""
     secWithValArr[Number(index)][keyName] = value
     projectConfiguration.config.securityWithValues = secWithValArr
-    console.log(projectConfiguration.config)
     setProjectByProjectName(projectName, projectConfiguration)
     setState({...state, secWithValArr: secWithValArr})
   }

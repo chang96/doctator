@@ -58,21 +58,7 @@ const initialState: {
   selectedProjectName: "defaultProject",
   projectList: Object.keys(allProjects),
 };
-// {
-//   baseUrl: "",
-//   headers: {},
-//   queries: [],
-//   params: [],
-//   authentication: {},
-//   method: "GET",
-//   paths: "",
-//   body: {},
-//   description: "",
-//   tags: [],
-//   summary: "",
-//   operationId: "",
-//   name: "",
-// };
+
 
 function saveEndpointsInLocalStorage(
   index: number,
@@ -134,7 +120,7 @@ const requestConfigurationSlice = createSlice({
       saveEndpointsInLocalStorage(
         state.selectedEndpoint,
         "method",
-        action.payload.method,
+        (action.payload.method as string).toLowerCase(),
         state.selectedProjectName
       );
     },
@@ -184,7 +170,12 @@ const requestConfigurationSlice = createSlice({
     },
     setBody(state, action) {
       state.endpoints[state.selectedEndpoint].requestBody = action.payload.body;
-      saveEndpointsInLocalStorage(state.selectedEndpoint, "requestBody", action.payload.body, state.selectedProjectName)
+      saveEndpointsInLocalStorage(
+        state.selectedEndpoint,
+        "requestBody",
+        action.payload.body,
+        state.selectedProjectName
+      );
     },
     setDescriptionDetails(state, action) {
       state.endpoints[state.selectedEndpoint].description =
@@ -299,14 +290,15 @@ const requestConfigurationSlice = createSlice({
       deleteProject(projectName);
     },
     setResponses(state, action) {
-      state.endpoints[state.selectedEndpoint].responses = action.payload.responses;
+      state.endpoints[state.selectedEndpoint].responses =
+        action.payload.responses;
       saveEndpointsInLocalStorage(
         state.selectedEndpoint,
         "responses",
         action.payload.responses,
         state.selectedProjectName
       );
-    }
+    },
   },
 });
 
@@ -327,7 +319,7 @@ export const {
   addProjectList,
   removeProjectFromList,
   setSelectedProjectName,
-  setResponses
+  setResponses,
 } = requestConfigurationSlice.actions;
 
 export default requestConfigurationSlice.reducer;

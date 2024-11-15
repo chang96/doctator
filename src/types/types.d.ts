@@ -19,7 +19,7 @@ type Params = string[]
 type RequestData = {
     method: Method;
     baseUrl: string;
-    path: string;
+    path?: string;
     payload?: any;
     headers?: Record<string, string>;
     queries?: MrQueries

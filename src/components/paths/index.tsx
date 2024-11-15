@@ -12,8 +12,24 @@ import TagsSelection from "../../elements/tagsSelection";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
-import { setMethod, setNewEnpoint, setSelectedEndpoint, deleteEndpoint, setSelectedProjectName, setResponses } from "../../slices/request";
+import {
+  setMethod,
+  setNewEnpoint,
+  setSelectedEndpoint,
+  deleteEndpoint,
+  setSelectedProjectName,
+  setResponses,
+} from "../../slices/request";
 import { extractParams, extractQueries } from "../../utils/helpers";
+import { getProject } from "../../utils/localstorageFuncs";
+import { makeRequest } from "../../utils/makeRequest";
+function reWriteHeader(h: Record<string, string>): Record<string, string> {
+  const res = {} as Record<string, string>;
+  for (let key in h) {
+    res[String(key)] = h[key];
+  }
+  return res;
+}
 
 type PathElements = {
   description: JSX.Element;
@@ -56,17 +72,21 @@ function Paths() {
     operationId,
     tags,
     authd,
-    responses
+    responses,
   } = useSelector(
     (state: RootState) =>
       state.requestConfig.endpoints[state.requestConfig.selectedEndpoint]
   );
 
-  const endpointsArr = useSelector((state: RootState) => state.requestConfig.endpoints)
-  const selectedProjectName = useSelector((state: RootState) => state.requestConfig.selectedProjectName)
+  const endpointsArr = useSelector(
+    (state: RootState) => state.requestConfig.endpoints
+  );
+  const selectedProjectName = useSelector(
+    (state: RootState) => state.requestConfig.selectedProjectName
+  );
 
-  const endpoints = endpointsArr.map(
-    (x: any) => `${x.method} ${x.path}`.toLowerCase()
+  const endpoints = endpointsArr.map((x: any) =>
+    `${x.method} ${x.path}`.toLowerCase()
   );
 
   const [state, setState] = useState<{
@@ -87,30 +107,78 @@ function Paths() {
     dispatch(setMethod({ method: value }));
   };
   const handleResponseCodeSelection = (index: number) => {
-    setState({...state, selectedResponseIndex: Number(index)})
-  }
-  const handleResponseDescription: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    setState({ ...state, selectedResponseIndex: Number(index) });
+  };
+  const handleResponseDescription: React.ChangeEventHandler<
+    HTMLInputElement
+  > = (e) => {
     const { value } = e.target;
-    const responseCopy = JSON.parse(JSON.stringify(responses))
-    responseCopy[state.selectedResponseIndex].description = value
-    dispatch(setResponses({responses: responseCopy}))
-  }
-  const sendRequest = () => {
+    const responseCopy = JSON.parse(JSON.stringify(responses));
+    responseCopy[state.selectedResponseIndex].description = value;
+    dispatch(setResponses({ responses: responseCopy }));
+  };
+  const sendRequest = async () => {
+    const project = getProject(selectedProjectName);
+    const m = method;
+    const u =
+      selectedUrl + path + extractParams(params) + extractQueries(queries);
+    const s = authd.use
+      ? project.config.securityWithValues[authd.position-1]
+      : {};
+      console.log({s})
+    const h = { ...s, ...headers };
+    let b = body ? JSON.stringify(body) : null;
+    if (m.toUpperCase() === "GET" || m.toUpperCase() === "DELETE") {
+      b = null;
+    }
+
     console.log(
       method,
       selectedUrl + path + extractParams(params) + extractQueries(queries),
-      headers,
+      reWriteHeader(h),
       body,
       { name, summary, operationId, description },
       tags,
       authd
     );
+    const r = await makeRequest({
+      baseUrl: u,
+      method: m,
+      payload: b,
+      headers: reWriteHeader(h),
+    });
+    console.log(r);
+    let { status, data, statusText } = r;
+
+    const responseCopy = JSON.parse(JSON.stringify(responses));
+    console.log(responseCopy, status, data, statusText);
+    const codeFound = responseCopy
+      .map((x: any) => String(x.code))
+      .includes(String(status));
+    if (codeFound) {
+      responseCopy.forEach((response: any) => {
+        if (response.code === String(status)) {
+          console.log("a");
+          response.res = data;
+        }
+      });
+      dispatch(setResponses({ responses: responseCopy }));
+    }
+
+    if (status && !codeFound) {
+      responseCopy.push({
+        code: String(status),
+        res: data,
+        description: "",
+      });
+      dispatch(setResponses({ responses: responseCopy }));
+    }
   };
 
   const handleEndpointSelection: React.MouseEventHandler<HTMLDivElement> = (
     e
   ) => {
-    setState({...state, selectedResponseIndex: 0})
+    setState({ ...state, selectedResponseIndex: 0 });
     const { id } = e.currentTarget;
     dispatch(setSelectedEndpoint({ index: Number(id) }));
   };
@@ -122,7 +190,7 @@ function Paths() {
       requestQueries: [],
       requestParams: [],
       authd: {} as Authd,
-      method: "GET",
+      method: "get",
       path: "",
       requestBody: {},
       description: "",
@@ -130,19 +198,19 @@ function Paths() {
       summary: "",
       operationId: "",
       name: "",
-      responses: []
+      responses: [],
     };
 
-    dispatch(setNewEnpoint({endpoint: newEndpoint}))
+    dispatch(setNewEnpoint({ endpoint: newEndpoint }));
   };
 
   const removeEndpoint = (index: number) => {
-    dispatch(deleteEndpoint({index}))
-  } 
+    dispatch(deleteEndpoint({ index }));
+  };
 
   useEffect(() => {
-    dispatch(setSelectedProjectName({projectName: selectedProjectName}))
-  }, [dispatch, selectedProjectName])
+    dispatch(setSelectedProjectName({ projectName: selectedProjectName }));
+  }, [dispatch, selectedProjectName]);
   return (
     <div>
       <div className="fr2 ov">
@@ -208,37 +276,60 @@ function Paths() {
 
       <div className="elementContainer ov">
         <div className="fr">
-              {
-                responses.map((response, index) => {
-                  return (
-                    <div onClick={()=> handleResponseCodeSelection(index)} className="ml pointa" key={index}>
-                      {response.code}
-                    </div>
-                  )
-                })
-              }
+          {responses.map((response, index) => {
+            return (
+              <div
+                onClick={() => handleResponseCodeSelection(index)}
+                className="ml pointa"
+                key={index}
+              >
+                {response.code}
+              </div>
+            );
+          })}
         </div>
-        <div><input onChange={handleResponseDescription} value={responses[state.selectedResponseIndex]?.description || ""} placeholder="description" /></div>
-        <textarea className="responseTextArea txtarea" readOnly value={JSON.stringify(responses[state.selectedResponseIndex]?.res||{}, null, "  ")}></textarea>
+        <div>
+          <input
+            onChange={handleResponseDescription}
+            value={responses[state.selectedResponseIndex]?.description || ""}
+            placeholder="description"
+          />
+        </div>
+        <textarea
+          className="responseTextArea txtarea"
+          readOnly
+          value={JSON.stringify(
+            responses[state.selectedResponseIndex]?.res || {},
+            null,
+            "  "
+          )}
+        ></textarea>
       </div>
 
       <div className="frpath mt">
         <div className="ov fr1">
           {endpoints.map((endpoint: any, i: number) => (
             <div key={i} className="frpath">
-              <button onClick={()=> removeEndpoint(i)} className="remove-button">X</button>
+              <button
+                onClick={() => removeEndpoint(i)}
+                className="remove-button"
+              >
+                X
+              </button>
               <div
-              className="pointa"
-              key={i}
-              id={`${i}`}
-              onClick={handleEndpointSelection}
-            >
-              {endpoint}
-            </div>
+                className="pointa"
+                key={i}
+                id={`${i}`}
+                onClick={handleEndpointSelection}
+              >
+                {endpoint}
+              </div>
             </div>
           ))}
         </div>
-        <div onClick={addNewEndpoint} className="pointa add-button">+</div>
+        <div onClick={addNewEndpoint} className="pointa add-button">
+          +
+        </div>
       </div>
     </div>
   );
