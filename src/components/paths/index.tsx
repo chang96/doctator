@@ -66,11 +66,11 @@ function Paths() {
     requestQueries: queries,
     headers,
     requestBody: body,
-    description,
-    summary,
-    name,
-    operationId,
-    tags,
+    // description,
+    // summary,
+    // name,
+    // operationId,
+    // tags,
     authd,
     responses,
   } = useSelector(
@@ -93,7 +93,8 @@ function Paths() {
     active: PathElementsKey;
     baseUrl: string;
     selectedResponseIndex: number;
-  }>({ active: "url", baseUrl: "", selectedResponseIndex: 0 });
+    responses: ResponseData[];
+  }>({ active: "url", baseUrl: "", selectedResponseIndex: 0, responses });
 
   const dispatch: AppDispatch = useDispatch();
 
@@ -115,8 +116,47 @@ function Paths() {
     const { value } = e.target;
     const responseCopy = JSON.parse(JSON.stringify(responses));
     responseCopy[state.selectedResponseIndex].description = value;
+    setState({...state, responses: responseCopy })
     dispatch(setResponses({ responses: responseCopy }));
   };
+
+  const handleAddNewResponseManually = () => {
+    setState({ ...state, responses: [...state.responses, { code: 0, description: "", res: {} }], selectedResponseIndex: Number([...state.responses].length) });
+  }
+
+  const removeResponse = (index: number) => {
+    const responseCopy = JSON.parse(JSON.stringify(state.responses));
+    responseCopy.splice(index, 1);
+    setState({...state, responses: responseCopy, selectedResponseIndex: 0})
+    dispatch(setResponses({ responses: responseCopy }));
+  }
+  const handleResponseCodeManually: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const {name, value} =e.target
+    const responseCopy = JSON.parse(JSON.stringify(state.responses))
+    const newResponse = responseCopy[Number(name)]
+    newResponse.code = Number(value)
+
+    responseCopy[Number(name)] = newResponse
+
+    setState({...state, responses: responseCopy})
+    dispatch(setResponses({ responses: responseCopy }));
+  }
+  const manuallyAddRes:React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    const {value} = e.target
+    const responseCopy = JSON.parse(JSON.stringify(state.responses))
+    try {
+    const parsed = JSON.parse(value)
+    responseCopy[state.selectedResponseIndex].res = parsed
+    dispatch(setResponses({ responses: responseCopy}));
+      
+    } catch (error) {
+      responseCopy[state.selectedResponseIndex].res = value
+    }
+
+    setState({...state, responses: responseCopy})
+
+
+  }
   const sendRequest = async () => {
     const project = getProject(selectedProjectName);
     const m = method;
@@ -125,40 +165,36 @@ function Paths() {
     const s = authd.use
       ? project.config.securityWithValues[authd.position-1]
       : {};
-      console.log({s})
     const h = { ...s, ...headers };
     let b = body ? JSON.stringify(body) : null;
     if (m.toUpperCase() === "GET" || m.toUpperCase() === "DELETE") {
       b = null;
     }
 
-    console.log(
-      method,
-      selectedUrl + path + extractParams(params) + extractQueries(queries),
-      reWriteHeader(h),
-      body,
-      { name, summary, operationId, description },
-      tags,
-      authd
-    );
+    // console.log(
+    //   method,
+    //   selectedUrl + path + extractParams(params) + extractQueries(queries),
+    //   reWriteHeader(h),
+    //   body,
+    //   { name, summary, operationId, description },
+    //   tags,
+    //   authd
+    // );
     const r = await makeRequest({
       baseUrl: u,
       method: m,
       payload: b,
       headers: reWriteHeader(h),
     });
-    console.log(r);
-    let { status, data, statusText } = r;
+    let { status, data} = r;
 
     const responseCopy = JSON.parse(JSON.stringify(responses));
-    console.log(responseCopy, status, data, statusText);
     const codeFound = responseCopy
       .map((x: any) => String(x.code))
       .includes(String(status));
     if (codeFound) {
       responseCopy.forEach((response: any) => {
         if (response.code === String(status)) {
-          console.log("a");
           response.res = data;
         }
       });
@@ -276,33 +312,35 @@ function Paths() {
 
       <div className="elementContainer ov">
         <div className="fr">
-          {responses.map((response, index) => {
+          {state.responses.map((response, index) => {
             return (
+             <div key={index} className="fr ml">
+              <button onClick={() => removeResponse(index)} className="remove-button" >X</button>
               <div
                 onClick={() => handleResponseCodeSelection(index)}
-                className="ml pointa"
+                className="pointa"
                 key={index}
               >
-                {response.code}
+                <input onChange={handleResponseCodeManually} name={`${index}`} style={{width: "25px"}} value={response.code} />
               </div>
+             </div>
             );
           })}
+          <div onClick={()=> handleAddNewResponseManually()} className="pointa add-button">
+          +
+        </div>
         </div>
         <div>
           <input
             onChange={handleResponseDescription}
-            value={responses[state.selectedResponseIndex]?.description || ""}
+            value={state.responses[state.selectedResponseIndex]?.description || ""}
             placeholder="description"
           />
         </div>
         <textarea
           className="responseTextArea txtarea"
-          readOnly
-          value={JSON.stringify(
-            responses[state.selectedResponseIndex]?.res || {},
-            null,
-            "  "
-          )}
+          onChange={manuallyAddRes}
+          value={typeof state.responses[state.selectedResponseIndex]?.res === "object" ? JSON.stringify(state.responses[state.selectedResponseIndex]?.res, null, " ") : state.responses[state.selectedResponseIndex]?.res}
         ></textarea>
       </div>
 
