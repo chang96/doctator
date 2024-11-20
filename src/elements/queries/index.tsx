@@ -27,10 +27,11 @@ function QueriesFunc() {
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name, value } = e.target;
     const [field, index] = name.split("-");
-    state.queries[Number(index)][field as K] = value;
-    setState((state) => ({ queries: [...state.queries] }));
+    const queriesCopy = JSON.parse(JSON.stringify(state.queries))
+    queriesCopy[Number(index)][field as K] = value;
+    setState((state) => ({ queries: queriesCopy }));
     
-    dispatch(setQueries({ queries: [...state.queries] }));
+    dispatch(setQueries({ queries: queriesCopy }));
   };
 
   return (
