@@ -36,7 +36,7 @@ function AuthSelection() {
     const {value} = e.currentTarget
     let [index, isChecked] = value.split('-') 
     const newSec = {} as Record<string, string>;
-    const secWithValue = securityWithValues[Number(index)];
+    const secWithValue = securityWithValues ? securityWithValues[Number(index)] : {};
 
     const isCheckedBool = isChecked === "true" ? true : false
     if(!isCheckedBool) {
@@ -44,7 +44,7 @@ function AuthSelection() {
 
       const sec = securityArr[Number(index)];
       for (const k in sec) {
-        newSec[k] = secWithValue[k];
+        newSec[k] = secWithValue[k] || "default";
       }
       headers = { ...newSec, ...headers };
       dispatch(setHeaders({ headers }));

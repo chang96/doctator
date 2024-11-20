@@ -22,9 +22,10 @@ function SecuritySchemes() {
           delete curr[k as F];
         }
       }
-      acc[curr.schemeName] = curr
+      const {schemeName, ...others} = curr
+      acc[curr.schemeName] = others as Omit<Sec, "schemeName">
       return acc;
-    }, {} as Record<string, Sec>)
+    }, {} as Record<string, Omit<Sec, "schemeName">>)
     setProjectByProjectName(projectName, projectConfiguration)
   };
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -39,9 +40,10 @@ function SecuritySchemes() {
           delete curr[k as F];
         }
       }
-      acc[curr.schemeName] = curr
+      const {schemeName, ...others} = curr
+      acc[curr.schemeName] = others as Omit<Sec, "schemeName">
       return acc;
-    }, {} as Record<string, Sec>)
+    }, {} as Record<string, Omit<Sec, "schemeName">>)
     setProjectByProjectName(projectName, projectConfiguration)
   };
   const deleteSecurityScheme = (index: number) => {
@@ -54,9 +56,10 @@ function SecuritySchemes() {
           delete curr[k as F];
         }
       }
-      acc[curr.schemeName] = curr
+      const {schemeName, ...others} = curr
+      acc[curr.schemeName] = others as Omit<Sec, "schemeName">
       return acc;
-    }, {} as Record<string, Sec>)
+    }, {} as Record<string, Omit<Sec, "schemeName">>)
     setProjectByProjectName(projectName, projectConfiguration)
   };
 

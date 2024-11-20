@@ -140,7 +140,7 @@ function Security() {
                       name={`${k}**${j}**${index}`}
                     />
                     <div className="w100">{k}</div>
-                    <input onChange={handleSetAuthenticationHeaderValue} value={state.secWithValArr[index] ? state.secWithValArr[index][k] : "" } name={`${k}**${index}`} type="text" placeholder="value" />
+                    <input onChange={handleSetAuthenticationHeaderValue} value={state.secWithValArr[index] ? state.secWithValArr[index][k] : "default" } name={`${k}**${index}`} type="text" placeholder="value" />
                   </div>
                 );
               })}
