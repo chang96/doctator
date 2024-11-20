@@ -44,7 +44,7 @@ const endpoints = (
   return {
     ...endpoint,
     ...(!endpoint.baseUrl && { baseUrl: serverArr[0].url }),
-    headers: { "content-type": "application/json" },
+    // headers: { "content-type": "application/json" },
   };
 });
 const initialState: {
@@ -265,7 +265,7 @@ const requestConfigurationSlice = createSlice({
         return {
           ...endpoint,
           ...(!endpoint.baseUrl && { baseUrl: serverArr[0].url }),
-          headers: { "content-type": "application/json" },
+          // headers: { "content-type": "application/json" },
         };
       });
       state.selectedEndpoint = 0;

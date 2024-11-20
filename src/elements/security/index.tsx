@@ -25,7 +25,7 @@ function Security() {
   });
 
   let secWithValArr = securityArr.map((sec, i) => {
-    return projectConfiguration.config.securityWithValues[i] || sec
+    return projectConfiguration.config.securityWithValues ? projectConfiguration.config.securityWithValues[i] : sec
   })
 
   secWithValArr = secWithValArr.map((x: any) => {

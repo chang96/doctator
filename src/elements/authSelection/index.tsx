@@ -9,6 +9,7 @@ function AuthSelection() {
   const {selectedProjectName: projectName} = useSelector((state: RootState) => state.requestConfig)
   const projectConfiguration = getProject(projectName);
   const securityArr = projectConfiguration.config.security as SecurityType[];
+  const securityWithValues = projectConfiguration.config.securityWithValues as Record<string, string>[]
   let { authd } = useSelector(
     (state: RootState) =>
       state.requestConfig.endpoints[state.requestConfig.selectedEndpoint]
@@ -34,14 +35,16 @@ function AuthSelection() {
   const handleClick: React.MouseEventHandler<HTMLInputElement> = (e) =>{
     const {value} = e.currentTarget
     let [index, isChecked] = value.split('-') 
+    const newSec = {} as Record<string, string>;
+    const secWithValue = securityWithValues[Number(index)];
+
     const isCheckedBool = isChecked === "true" ? true : false
     if(!isCheckedBool) {
       dispatch(setAuthd({ authd: { use: true, position: Number(index)+1  } }));
 
       const sec = securityArr[Number(index)];
-      const newSec = {} as Record<string, string>;
       for (const k in sec) {
-        newSec[k] = "";
+        newSec[k] = secWithValue[k];
       }
       headers = { ...newSec, ...headers };
       dispatch(setHeaders({ headers }));
@@ -49,13 +52,16 @@ function AuthSelection() {
       dispatch(setAuthd({ authd: { use: false, position: Infinity  } }));
 
       const sec = securityArr[Number(index)];
-      const newSec = {} as Record<string, string>;
       for (const k in sec) {
-        if(headers && headers[k] && newSec[k] === headers[k]){
-          delete headers[k]
+        newSec[k] = secWithValue[k];
+      }
+      const newHeaders = {...headers} as Record<string, string>;
+      for (const k in sec) {
+        if(newSec[k] === newHeaders[k]){
+          delete newHeaders[k]
         };
       }
-      dispatch(setHeaders({ headers }));
+      dispatch(setHeaders({ headers: newHeaders }));
     }
 }
 

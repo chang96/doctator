@@ -234,10 +234,11 @@ function Paths() {
       summary: "",
       operationId: "",
       name: "",
-      responses: [],
+      responses: [{res: {}, code: 0, description:""}],
     };
 
     dispatch(setNewEnpoint({ endpoint: newEndpoint }));
+    setState({...state, responses: newEndpoint.responses})
   };
 
   const removeEndpoint = (index: number) => {
