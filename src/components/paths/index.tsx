@@ -57,6 +57,18 @@ const pathElements = {
   tags: <TagsSelection />,
 };
 
+const pathElementsArray = [
+  { name: "Url", id: "url" },
+  { name: "Path", id: "path" },
+  { name: "Params", id: "params" },
+  { name: "Queries", id: "queries" },
+  { name: "Headers", id: "headers" },
+  { name: "Auth", id: "auth" },
+  { name: "Body", id: "body" },
+  { name: "Description", id: "description" },
+  { name: "Tags", id: "tags" },
+];
+
 function Paths() {
   const {
     baseUrl: selectedUrl,
@@ -116,54 +128,57 @@ function Paths() {
     const { value } = e.target;
     const responseCopy = JSON.parse(JSON.stringify(responses));
     responseCopy[state.selectedResponseIndex].description = value;
-    setState({...state, responses: responseCopy })
+    setState({ ...state, responses: responseCopy });
     dispatch(setResponses({ responses: responseCopy }));
   };
 
   const handleAddNewResponseManually = () => {
-    setState({ ...state, responses: [...state.responses, { code: 0, description: "", res: {} }], selectedResponseIndex: Number([...state.responses].length) });
-  }
+    setState({
+      ...state,
+      responses: [...state.responses, { code: 0, description: "", res: {} }],
+      selectedResponseIndex: Number([...state.responses].length),
+    });
+  };
 
   const removeResponse = (index: number) => {
     const responseCopy = JSON.parse(JSON.stringify(state.responses));
     responseCopy.splice(index, 1);
-    setState({...state, responses: responseCopy, selectedResponseIndex: 0})
+    setState({ ...state, responses: responseCopy, selectedResponseIndex: 0 });
     dispatch(setResponses({ responses: responseCopy }));
-  }
-  const handleResponseCodeManually: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    const {name, value} =e.target
-    const responseCopy = JSON.parse(JSON.stringify(state.responses))
-    const newResponse = responseCopy[Number(name)]
-    newResponse.code = Number(value)
+  };
+  const handleResponseCodeManually: React.ChangeEventHandler<
+    HTMLInputElement
+  > = (e) => {
+    const { name, value } = e.target;
+    const responseCopy = JSON.parse(JSON.stringify(state.responses));
+    const newResponse = responseCopy[Number(name)];
+    newResponse.code = Number(value);
 
-    responseCopy[Number(name)] = newResponse
+    responseCopy[Number(name)] = newResponse;
 
-    setState({...state, responses: responseCopy})
+    setState({ ...state, responses: responseCopy });
     dispatch(setResponses({ responses: responseCopy }));
-  }
-  const manuallyAddRes:React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-    const {value} = e.target
-    const responseCopy = JSON.parse(JSON.stringify(state.responses))
+  };
+  const manuallyAddRes: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    const { value } = e.target;
+    const responseCopy = JSON.parse(JSON.stringify(state.responses));
     try {
-    const parsed = JSON.parse(value)
-    responseCopy[state.selectedResponseIndex].res = parsed
-    dispatch(setResponses({ responses: responseCopy}));
-      
+      const parsed = JSON.parse(value);
+      responseCopy[state.selectedResponseIndex].res = parsed;
+      dispatch(setResponses({ responses: responseCopy }));
     } catch (error) {
-      responseCopy[state.selectedResponseIndex].res = value
+      responseCopy[state.selectedResponseIndex].res = value;
     }
 
-    setState({...state, responses: responseCopy})
-
-
-  }
+    setState({ ...state, responses: responseCopy });
+  };
   const sendRequest = async () => {
     const project = getProject(selectedProjectName);
     const m = method;
     const u =
       selectedUrl + path + extractParams(params) + extractQueries(queries);
     const s = authd.use
-      ? project.config.securityWithValues[authd.position-1]
+      ? project.config.securityWithValues[authd.position - 1]
       : {};
     const h = { ...s, ...headers };
     let b = body ? JSON.stringify(body) : null;
@@ -186,7 +201,7 @@ function Paths() {
       payload: b,
       headers: reWriteHeader(h),
     });
-    let { status, data} = r;
+    let { status, data } = r;
 
     const responseCopy = JSON.parse(JSON.stringify(responses));
     const codeFound = responseCopy
@@ -214,8 +229,9 @@ function Paths() {
   const handleEndpointSelection: React.MouseEventHandler<HTMLDivElement> = (
     e
   ) => {
-    setState({ ...state, selectedResponseIndex: 0 });
     const { id } = e.currentTarget;
+    setState({ ...state, selectedResponseIndex: Number(id)});
+
     dispatch(setSelectedEndpoint({ index: Number(id) }));
   };
 
@@ -234,11 +250,11 @@ function Paths() {
       summary: "",
       operationId: "",
       name: "",
-      responses: [{res: {}, code: 0, description:""}],
+      responses: [{ res: {}, code: 0, description: "" }],
     };
 
     dispatch(setNewEnpoint({ endpoint: newEndpoint }));
-    setState({...state, responses: newEndpoint.responses})
+    setState({ ...state, responses: newEndpoint.responses });
   };
 
   const removeEndpoint = (index: number) => {
@@ -280,7 +296,11 @@ function Paths() {
       </div>
 
       <div className="fr1 ov">
-        <div onClick={handleActiveElement} className="pointa" id="url">
+        {pathElementsArray.map((path) => {
+          return <div onClick={handleActiveElement} className="pointa" id={path.id} >{(state.active !== path.id) || "*"  }{path.name}</div>
+        })}
+        
+        {/* <div onClick={handleActiveElement} className="pointa" id="url">
           Url
         </div>
         <div onClick={handleActiveElement} className="pointa" id="path">
@@ -306,7 +326,7 @@ function Paths() {
         </div>
         <div onClick={handleActiveElement} className="pointa" id="tags">
           Tags
-        </div>
+        </div> */}
       </div>
 
       <div className="elementContainer ov">{pathElements[state.active]}</div>
@@ -315,33 +335,57 @@ function Paths() {
         <div className="fr">
           {state.responses.map((response, index) => {
             return (
-             <div key={index} className="fr ml">
-              <button onClick={() => removeResponse(index)} className="remove-button" >X</button>
-              <div
-                onClick={() => handleResponseCodeSelection(index)}
-                className="pointa"
-                key={index}
-              >
-                <input onChange={handleResponseCodeManually} name={`${index}`} style={{width: "25px"}} value={response.code} />
+              <div key={index} className="fr ml">
+                <button
+                  onClick={() => removeResponse(index)}
+                  className="remove-button"
+                >
+                  X
+                </button>
+                <div
+                  onClick={() => handleResponseCodeSelection(index)}
+                  className="pointa"
+                  key={index}
+                >
+                  <input
+                    onChange={handleResponseCodeManually}
+                    name={`${index}`}
+                    style={{ width: "25px" }}
+                    value={response.code}
+                  />
+                </div>
               </div>
-             </div>
             );
           })}
-          <div onClick={()=> handleAddNewResponseManually()} className="pointa add-button">
-          +
-        </div>
+          <div
+            onClick={() => handleAddNewResponseManually()}
+            className="pointa add-button"
+          >
+            +
+          </div>
         </div>
         <div>
           <input
             onChange={handleResponseDescription}
-            value={state.responses[state.selectedResponseIndex]?.description || ""}
+            value={
+              state.responses[state.selectedResponseIndex]?.description || ""
+            }
             placeholder="description"
           />
         </div>
         <textarea
           className="responseTextArea txtarea"
           onChange={manuallyAddRes}
-          value={typeof state.responses[state.selectedResponseIndex]?.res === "object" ? JSON.stringify(state.responses[state.selectedResponseIndex]?.res, null, " ") : state.responses[state.selectedResponseIndex]?.res}
+          value={
+            typeof state.responses[state.selectedResponseIndex]?.res ===
+            "object"
+              ? JSON.stringify(
+                  state.responses[state.selectedResponseIndex]?.res,
+                  null,
+                  " "
+                )
+              : state.responses[state.selectedResponseIndex]?.res
+          }
         ></textarea>
       </div>
 
@@ -361,7 +405,7 @@ function Paths() {
                 id={`${i}`}
                 onClick={handleEndpointSelection}
               >
-                {endpoint}
+                {endpoint}{i !== state.selectedResponseIndex || "*"}
               </div>
             </div>
           ))}
