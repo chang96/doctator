@@ -46,6 +46,25 @@ function SecuritySchemes() {
     }, {} as Record<string, Omit<Sec, "schemeName">>)
     setProjectByProjectName(projectName, projectConfiguration)
   };
+
+  const handleSelection: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+    const { name, value } = e.target;
+    const [field, index] = name.split("-");
+    const stateCopy = [...state.securityScheme]
+    stateCopy[Number(index)][field as F] = value;
+    setState({ securityScheme: [...stateCopy] });
+    projectConfiguration.config.components.securitySchemes = [...stateCopy].reduce((acc, curr) => {
+      for (const k in curr) {
+        if (curr[k as F]  === 'unused') {
+          delete curr[k as F];
+        }
+      }
+      const {schemeName, ...others} = curr
+      acc[curr.schemeName] = others as Omit<Sec, "schemeName">
+      return acc;
+    }, {} as Record<string, Omit<Sec, "schemeName">>)
+    setProjectByProjectName(projectName, projectConfiguration)
+  };
   const deleteSecurityScheme = (index: number) => {
     const newSec = [...state.securityScheme];
     newSec.splice(index, 1);
@@ -97,11 +116,14 @@ function SecuritySchemes() {
               {x.map(([k, v], i) => {
                 return <div key={i}>
                 <div>{k}:</div>
-                <input
+                {k === 'type'? <select style={{width: "147px"}} name={`${k}-${index}`} defaultValue={state.securityScheme[i]? state.securityScheme[i].type : "apiKey"} onChange={handleSelection}>
+                  <option value="apiKey">apiKey</option>
+                  <option value="http">http</option>
+                </select> : <input
                   name={`${k}-${index}`}
-                  value={v}
+                  value={k === "in"? "header" : k === "scheme" ? "bearer" : k === "bearerFormat" ? "JWT" : v}
                   onChange={handleChange}
-                />
+                />}
               </div>
               })}
              
