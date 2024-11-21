@@ -14,7 +14,7 @@ function SecuritySchemes() {
     securityScheme: [...securitySchemesArr],
   });
   const addSecurityScheme = () => {
-    const newSec = { schemeName: "", type: "", in: "", name: "", description:"", bearerFormat: "", scheme: "" };
+    const newSec = { schemeName: "", type: "", in: "header", name: "", description:"", bearerFormat: "JWT", scheme: "bearer" };
     setState({ securityScheme: [...state.securityScheme, newSec] });
     projectConfiguration.config.components.securitySchemes = [...state.securityScheme, newSec].reduce((acc, curr) => {
       for (const k in curr) {
@@ -28,9 +28,17 @@ function SecuritySchemes() {
     }, {} as Record<string, Omit<Sec, "schemeName">>)
     setProjectByProjectName(projectName, projectConfiguration)
   };
+  const obj: Record<"in"|"scheme"|"bearerFormat", string> =  {
+    "in": "header",
+    "scheme": "bearer",
+    "bearerFormat": "JWT"
+  }
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
     const [field, index] = name.split("-");
+    if(obj[field as "in"|"scheme"|"bearerFormat"]) {
+      value = obj[field as "in"|"scheme"|"bearerFormat"]
+    }
     const stateCopy = [...state.securityScheme]
     stateCopy[Number(index)][field as F] = value;
     setState({ securityScheme: [...stateCopy] });
@@ -48,8 +56,11 @@ function SecuritySchemes() {
   };
 
   const handleSelection: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
     const [field, index] = name.split("-");
+    if(obj[field as "in"|"scheme"|"bearerFormat"]) {
+      value = obj[field as "in"|"scheme"|"bearerFormat"]
+    }
     const stateCopy = [...state.securityScheme]
     stateCopy[Number(index)][field as F] = value;
     setState({ securityScheme: [...stateCopy] });

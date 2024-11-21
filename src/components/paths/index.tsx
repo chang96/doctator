@@ -296,8 +296,8 @@ function Paths() {
       </div>
 
       <div className="fr1 ov">
-        {pathElementsArray.map((path) => {
-          return <div onClick={handleActiveElement} className="pointa" id={path.id} >{(state.active !== path.id) || "*"  }{path.name}</div>
+        {pathElementsArray.map((path, i) => {
+          return <div key={i} onClick={handleActiveElement} className="pointa" id={path.id} >{(state.active !== path.id) || "*"  }{path.name}</div>
         })}
         
         {/* <div onClick={handleActiveElement} className="pointa" id="url">

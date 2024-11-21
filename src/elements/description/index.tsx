@@ -16,7 +16,7 @@ function Description() {
     summary,
     operationId,
   } = useSelector((state: RootState) => state.requestConfig.endpoints[state.requestConfig.selectedEndpoint]);
-  const [state, setState] = useState<DescriptionDetails>({name: "", description:"", summary:"", operationId:""})
+  const [state, setState] = useState<DescriptionDetails>({name: name || "", description: description ||"", summary: summary || "", operationId: operationId||""})
   const dispatch: AppDispatch = useDispatch();
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
