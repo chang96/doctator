@@ -17,6 +17,31 @@ function TagFunc() {
     projectConfiguration.config.tags = [...state.tags, { name: "", description: "" }]
     setProjectByProjectName(projectName, projectConfiguration)
   };
+
+  const moveTagUp = (index: number) => {
+    const newTags = [...state.tags];
+    if (state.tags[index] && state.tags[index - 1]) {
+      const temp = newTags[index];
+      newTags[index] = newTags[index - 1];
+      newTags[index - 1] = temp;
+      setState({ tags: newTags });
+      projectConfiguration.config.tags = newTags
+      setProjectByProjectName(projectName, projectConfiguration)
+    }
+  }
+
+  const moveTagDown = (index: number) => {
+    const newTags = [...state.tags];
+    if (state.tags[index] && state.tags[index + 1]) {
+      const temp = newTags[index];
+      newTags[index] = newTags[index + 1];
+      newTags[index + 1] = temp;
+      setState({ tags: newTags });
+      projectConfiguration.config.tags = newTags
+      setProjectByProjectName(projectName, projectConfiguration)
+    }
+  }
+
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const { name, value } = e.target;
     const [field, index] = name.split('-');
@@ -41,6 +66,12 @@ function TagFunc() {
       <div className="fc">
         {state.tags.map((tag, index) => {
           return (
+          <div className="fr">
+            <div className="mr">
+              <button onClick={()=> moveTagUp(index)} className="add-button">&and;</button>
+              <button onClick={()=> moveTagDown(index)} className="add-button">&or;</button>
+
+            </div>
             <div style={{margin:"5px"}} key={index}>
               <button className="remove-button" style={{cursor:"pointer"}} onClick={()=> deleteTag(index)}>X</button>
               <div>
@@ -52,6 +83,7 @@ function TagFunc() {
                 <input name={`description-${index}`} value={tag.description} onChange={(e) => handleChange(e)} />
               </div>
             </div>
+          </div>
           );
         })}
       </div>

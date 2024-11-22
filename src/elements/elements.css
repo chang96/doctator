@@ -19,6 +19,9 @@
 .msmall {
   margin-top: 2px;
 }
+.mr {
+  margin-right: 10px;
+}
 
 .ov {
   overflow-y: auto;

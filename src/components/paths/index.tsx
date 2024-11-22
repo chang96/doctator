@@ -299,34 +299,6 @@ function Paths() {
         {pathElementsArray.map((path, i) => {
           return <div key={i} onClick={handleActiveElement} className="pointa" id={path.id} >{(state.active !== path.id) || "*"  }{path.name}</div>
         })}
-        
-        {/* <div onClick={handleActiveElement} className="pointa" id="url">
-          Url
-        </div>
-        <div onClick={handleActiveElement} className="pointa" id="path">
-          Path
-        </div>
-        <div onClick={handleActiveElement} className="pointa" id="params">
-          Params
-        </div>
-        <div onClick={handleActiveElement} className="pointa" id="queries">
-          Queries
-        </div>
-        <div onClick={handleActiveElement} className="pointa" id="headers">
-          Headers
-        </div>
-        <div onClick={handleActiveElement} className="pointa" id="auth">
-          Auth
-        </div>
-        <div onClick={handleActiveElement} className="pointa" id="body">
-          Body
-        </div>
-        <div onClick={handleActiveElement} className="pointa" id="description">
-          Description
-        </div>
-        <div onClick={handleActiveElement} className="pointa" id="tags">
-          Tags
-        </div> */}
       </div>
 
       <div className="elementContainer ov">{pathElements[state.active]}</div>
