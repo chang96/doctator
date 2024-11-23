@@ -266,9 +266,9 @@ function Paths() {
   }, [dispatch, selectedProjectName]);
   return (
     <div>
-      <div className="fr2 ov">
+      <div className="fr2">
         <div className="flex15">
-          <select value={method} onChange={handleMethodChange}>
+          <select className="txt" value={method} style={{height:"21px"}} onChange={handleMethodChange}>
             <option value={"get"}>GET</option>
             <option value={"post"}>POST</option>
             <option value={"put"}>PUT</option>
@@ -288,8 +288,8 @@ function Paths() {
             className="fw"
           />
         </div>
-        <div className="flex15">
-          <button onClick={sendRequest} className="fw">
+        <div style={{width:"13%", marginLeft: "2%"}}>
+          <button className="txt" style={{width:"100%", height:"22px"}} onClick={sendRequest}>
             send
           </button>
         </div>
@@ -303,7 +303,7 @@ function Paths() {
 
       <div className="elementContainer ov">{pathElements[state.active]}</div>
 
-      <div className="elementContainer ov">
+      <div className="elementContainer">
         <div className="fr">
           {state.responses.map((response, index) => {
             return (

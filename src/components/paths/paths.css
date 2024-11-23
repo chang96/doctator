@@ -1,6 +1,7 @@
 .c {
     width: 500px;
     height: "100%";
+    margin-top: 5px;
 }
 
 .fc {
@@ -19,29 +20,33 @@
   justify-content: space-between;
   overflow-x: auto;
   white-space: nowrap;
-  width: 400px;
-  gap: 20px;
+  width: 500px;
+  gap: 25px;
+  margin-top: 5px;
+
 }
 
 .fr2 {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     white-space: nowrap;
-    width: 400px;
+    width: 500px;
+    margin-top: 5px;
+
   }
 
 .elementContainer {
-    border: 1px solid beige;
     height: 120px;
-    width: 400px;
-    margin-top: 5px;
+    width: 500px;
+    margin-top: 7px;
 }
 
 .responseTextArea {
   resize: none;
   width: 100%;
-  height: 74px;
+  height: 84px;
+  margin-top: 5px;
+  outline: none;
 }
 
 .ov {
@@ -49,14 +54,16 @@
 }
 
 .flex70 {
-    flex: 7
+    /* flex: 7; */
+    width: 70%
 }
 .mt {
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .flex15 {
-    flex: 1.5
+    /* flex: 1.5; */
+    width: 15%;
 }
 
 .fw {
@@ -124,3 +131,34 @@
     outline: none;
   }
   
+
+  input{
+    font-weight: 450;                 
+    color: rgb(45, 44, 44); 
+    font-size: 0.75rem;     
+    letter-spacing: 0.8px;             
+    line-height: 1.0; 
+}
+
+select {
+  font-weight: 450;                 
+  color: rgb(35, 34, 34); 
+  font-size: 0.75rem;     
+  letter-spacing: 0.8px;             
+  line-height: 1.0; 
+}
+
+textarea {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;                              
+  color: #010101;                              
+  background-color: #f8f9fa;                     
+  border: 1px solid #ced4da;            
+  border-radius: 5px;                       
+  padding: 10px;                              
+  line-height: 1.5;                              
+  overflow: auto;                                 
+  resize: both;                  
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: pre;                            
+}

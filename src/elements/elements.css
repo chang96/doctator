@@ -123,3 +123,11 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.txt {
+  font-weight: 450;                 
+  color: rgb(73, 72, 72); 
+  font-size: 0.75rem;     
+  letter-spacing: 0.8px;             
+  line-height: 1.0; 
+}

@@ -25,6 +25,6 @@ export default function SideBarFooter(): JSX.Element{
         (state: RootState) => state.requestConfig.selectedProjectName
       );
     return <div className={styles.f} >
-        <Btn styles={{width: '85%', height:"5vh"}} name='Generate Json' func={()=> generateJson(dispatch, selectedProjectName)} />
+        <Btn styles={{width: '85%', height:"5vh"}} name='generate json' func={()=> generateJson(dispatch, selectedProjectName)} />
     </div>
 }

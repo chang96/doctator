@@ -25,11 +25,11 @@ function Description() {
     dispatch(setDescriptionDetails({...state, [name]: value}))
   }
   return (
-    <div>
-      <input value={name} onChange={handleChange} placeholder="Name" name="name" type="text" />
-      <input value={description} onChange={handleChange} placeholder="Description" name="description" type="text" />
-      <input value={summary} onChange={handleChange} placeholder="Summary" name="summary" type="text" />
-      <input value={operationId} onChange={handleChange} placeholder="Operation Id" name="operationId" type="text" />
+    <div style={{display: "flex", flexDirection:"row", flexWrap:"wrap"}}>
+      <div style={{width:"50%"}}><div>name:</div><div><input value={name} onChange={handleChange} placeholder="Name" name="name" type="text" /></div></div>
+      <div style={{width:"50%"}}><div>description:</div><div><input value={description} onChange={handleChange} placeholder="Description" name="description" type="text" /></div></div>
+      <div style={{width:"50%"}}><div>summary:</div><div> <input value={summary} onChange={handleChange} placeholder="Summary" name="summary" type="text" /></div></div>
+      <div style={{width:"50%"}}><div>operation id</div><div><input value={operationId} onChange={handleChange} placeholder="Operation Id" name="operationId" type="text" /></div></div>
     </div>
   );
 }

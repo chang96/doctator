@@ -3,12 +3,19 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 60%;
-    height: 60%;
-    background-color: rgb(255, 255, 255);
-    display: none;
+    height: 55%;
+    background-color: rgba(255, 255, 255, 1);
     justify-content: center;
     align-items: center;
     border-radius: 10px;
-    z-index: 1000;
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    min-width: 600px;
+
+    font-weight: 450;                 
+    color: rgb(5, 5, 5); 
+    font-size: 0.8rem;     
+    text-transform: capitalize;  
+    letter-spacing: 1.1px;             
+    line-height: 1.7; 
 }

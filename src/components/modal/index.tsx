@@ -8,6 +8,8 @@ import { useCallback, useEffect, useState } from "react";
 import { closeModal } from "../../slices/modalSlices";
 import Form from "../config";
 import Paths from "../paths";
+import styles from './styles.module.css'
+
 
 let mql = window.matchMedia('(max-width: 900px)')
 
@@ -37,21 +39,9 @@ export default function Modal(): JSX.Element{
         setState({selectedForm: selected})
       }, [selected]);
 
-    return <div style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: mql.matches ? "100%" : "50%",
-        height: "50%",
-        backgroundColor: "rgba(255, 255, 255, 1)",
+    return <div className={styles.m} style={{
+        width: mql.matches ? "100%" : "55%",
         display: mod ? "flex" : "none",
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: "10px",
-        zIndex: "100",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        padding:""
     }}>
         {state.selectedForm ? state.selectedForm === 'config' ? <Form /> : <Paths />  : "" }
     </div>

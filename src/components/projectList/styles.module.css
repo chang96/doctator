@@ -2,9 +2,27 @@
     display: flex;
     flex-direction: column;
     width: 15%;
+    min-width: 150px;
     align-items: center;
+    margin-top: 5px;
+    padding: 10px;
 }
 
 .pointa {
+}
+
+.projectname {
+    width: 100%;
+    max-width: 100%;
+    outline: none;
+}
+
+.list {
     cursor: pointer;
+    font-weight: 450;                  /* Thin weight */
+    color: rgb(5, 5, 5);                    /* Subtle gray */
+    font-size: 0.8rem;                   /* Adjust as needed */
+    text-transform: capitalize;        /* Capitalize first letters */
+    letter-spacing: 1.4px;             /* Slight spacing for readability */
+    line-height: 1.7; 
 }
