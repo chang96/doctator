@@ -18,6 +18,28 @@ async function makeRequest(requestData: RequestData): Promise<AxiosResponse> {
     }
 }
 
+async function makeProxyRequest(requestData: RequestData): Promise<AxiosResponse> {
+    try {
+        const { method, baseUrl, path, payload, headers, queries, params } = requestData;
+        const url = `${baseUrl}${path||""}${formParams(params)}${formQueries(queries)}`;
+    
+        return await axios ({
+            url: "https://gen-doc.sandymoon.com.ng/proxy-request",
+            method: "post",
+            data: {
+                url,
+                headers,
+                method: method,
+                ...(payload && {body: payload})
+        
+            }
+        }).then(response => response)
+    } catch (error: any) {
+        console.log(error)
+        return error.response as AxiosResponse
+    }
+}
+
 function formQueries(queries?: MrQueries) {
     if(!queries) return ''
     return `?${queries.map(query => Object.keys(query).map(key => `${key}=${encodeURIComponent(query[key])}`).join('&')).join('&')}`
@@ -50,7 +72,8 @@ async function r(reqData: RequestData) {
 
 export {
     makeRequest,
-    r
+    r,
+    makeProxyRequest
 }
 
 

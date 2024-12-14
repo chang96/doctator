@@ -22,7 +22,7 @@ import {
 } from "../../slices/request";
 import { extractParams, extractQueries } from "../../utils/helpers";
 import { getProject } from "../../utils/localstorageFuncs";
-import { makeRequest } from "../../utils/makeRequest";
+import { makeProxyRequest } from "../../utils/makeRequest";
 function reWriteHeader(h: Record<string, string>): Record<string, string> {
   const res = {} as Record<string, string>;
   for (let key in h) {
@@ -195,14 +195,23 @@ function Paths() {
     //   tags,
     //   authd
     // );
-    const r = await makeRequest({
+
+    const r1 = await makeProxyRequest({
       baseUrl: u,
-      method: m,
+      method: m.toUpperCase(),
       payload: b,
       headers: reWriteHeader(h),
     });
-    let { status, data } = r;
-
+    const codeRgx = new RegExp(/\d+/)
+    const dataString = atob(r1.data.responseBody).trim()
+    const status1 = (r1.data.responseBodyCode as string).match(codeRgx)?.[0]
+    const status = Number(status1)
+    let data: any
+    try {
+      data = JSON.parse(dataString)
+    } catch(e) {
+      data = dataString
+    }
     const responseCopy = JSON.parse(JSON.stringify(responses));
     const codeFound = responseCopy
       .map((x: any) => String(x.code))
@@ -214,6 +223,8 @@ function Paths() {
         }
       });
       dispatch(setResponses({ responses: responseCopy }));
+      setState({ ...state, responses: responseCopy });
+
     }
 
     if (status && !codeFound) {
@@ -223,6 +234,8 @@ function Paths() {
         description: "",
       });
       dispatch(setResponses({ responses: responseCopy }));
+      setState({ ...state, responses: responseCopy });
+
     }
   };
 
@@ -230,7 +243,7 @@ function Paths() {
     e
   ) => {
     const { id } = e.currentTarget;
-    setState({ ...state, selectedResponseIndex: Number(id)});
+    setState({ ...state, selectedResponseIndex: Number(id) });
 
     dispatch(setSelectedEndpoint({ index: Number(id) }));
   };
@@ -268,7 +281,12 @@ function Paths() {
     <div>
       <div className="fr2">
         <div className="flex15">
-          <select className="txt" value={method} style={{height:"21px"}} onChange={handleMethodChange}>
+          <select
+            className="txt"
+            value={method}
+            style={{ height: "21px" }}
+            onChange={handleMethodChange}
+          >
             <option value={"get"}>GET</option>
             <option value={"post"}>POST</option>
             <option value={"put"}>PUT</option>
@@ -288,8 +306,12 @@ function Paths() {
             className="fw"
           />
         </div>
-        <div style={{width:"13%", marginLeft: "2%"}}>
-          <button className="txt" style={{width:"100%", height:"22px"}} onClick={sendRequest}>
+        <div style={{ width: "13%", marginLeft: "2%" }}>
+          <button
+            className="txt"
+            style={{ width: "100%", height: "22px" }}
+            onClick={sendRequest}
+          >
             send
           </button>
         </div>
@@ -297,7 +319,17 @@ function Paths() {
 
       <div className="fr1 ov">
         {pathElementsArray.map((path, i) => {
-          return <div key={i} onClick={handleActiveElement} className="pointa" id={path.id} >{(state.active !== path.id) || "*"  }{path.name}</div>
+          return (
+            <div
+              key={i}
+              onClick={handleActiveElement}
+              className="pointa"
+              id={path.id}
+            >
+              {state.active !== path.id || "*"}
+              {path.name}
+            </div>
+          );
         })}
       </div>
 
@@ -377,7 +409,8 @@ function Paths() {
                 id={`${i}`}
                 onClick={handleEndpointSelection}
               >
-                {endpoint}{i !== state.selectedResponseIndex || "*"}
+                {endpoint}
+                {i !== state.selectedResponseIndex || "*"}
               </div>
             </div>
           ))}
