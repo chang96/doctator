@@ -1,4 +1,5 @@
 import GenDocs from '../pages/generate';
+import Preview from '../pages/preview';
 import NotFound from '../pages/notFound';
 
 export const routes: Array<RouteObject> = [
@@ -7,6 +8,14 @@ export const routes: Array<RouteObject> = [
     component: GenDocs,
     exact: true,
     path: '/',
+    authType: 'unAuthenticated',
+    redirectTo: '/'
+},
+{
+    name: 'preview',
+    component: Preview,
+    exact: true,
+    path: '/preview',
     authType: 'unAuthenticated',
     redirectTo: '/'
 },

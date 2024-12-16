@@ -11,5 +11,6 @@ export default function Preview(): JSX.Element{
     }, [json])
     return <div className={styles.f} >
         <textarea onChange={()=>''} value={JSON.stringify(state.value, null, "   ")} style={{width: "100%", height: "95%", border:"0.001px solid black", borderRadius: "10px"}}></textarea>
+        <button>Preview</button>
     </div>
 } 

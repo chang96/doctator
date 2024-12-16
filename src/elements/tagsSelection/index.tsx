@@ -4,7 +4,6 @@ import { getProject } from "../../utils/localstorageFuncs"
 import { setTag } from "../../slices/request";
 import { AppDispatch, RootState } from "../../store/store";
 import { useDispatch, useSelector } from "react-redux";
-type Tag = { name: string; description: string };
 
 function TagsSelection () {
     const {selectedProjectName: projectName} = useSelector((state: RootState) => state.requestConfig)

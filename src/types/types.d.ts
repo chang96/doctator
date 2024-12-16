@@ -45,3 +45,5 @@ interface RequestConfiguration {
     name: string;
     responses: ResponseData[]
   }
+
+type Tag = { name: string; description: string };
