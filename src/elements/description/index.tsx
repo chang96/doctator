@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { setDescriptionDetails } from "../../slices/request";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
@@ -21,9 +21,14 @@ function Description() {
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const {name, value} = e.target
-    setState({ ...state, [name]: value })
     dispatch(setDescriptionDetails({...state, [name]: value}))
+    setState({ ...state, [name]: value })
+
   }
+
+  useEffect(()=>{
+    setState({name, description: description||"", summary, operationId})
+  }, [name, description, summary, operationId])
   return (
     <div style={{display: "flex", flexDirection:"row", flexWrap:"wrap"}}>
       <div style={{width:"50%"}}><div>name:</div><div><input value={name} onChange={handleChange} placeholder="Name" name="name" type="text" /></div></div>
