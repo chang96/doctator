@@ -22,7 +22,7 @@ import {
 } from "../../slices/request";
 import { extractParams, extractQueries } from "../../utils/helpers";
 import { getProject } from "../../utils/localstorageFuncs";
-import { makeProxyRequest } from "../../utils/makeRequest";
+import { makeProxyRequest, makeRequest } from "../../utils/makeRequest";
 function reWriteHeader(h: Record<string, string>): Record<string, string> {
   const res = {} as Record<string, string>;
   for (let key in h) {
@@ -135,13 +135,13 @@ function Paths() {
   const handleAddNewResponseManually = () => {
     setState({
       ...state,
-      responses: [...state.responses, { code: 0, description: "", res: {} }],
-      selectedResponseIndex: Number([...state.responses].length),
+      responses: [...responses, { code: 0, description: "", res: {} }],
+      selectedResponseIndex: Number([...responses].length),
     });
   };
 
   const removeResponse = (index: number) => {
-    const responseCopy = JSON.parse(JSON.stringify(state.responses));
+    const responseCopy = JSON.parse(JSON.stringify(responses));
     responseCopy.splice(index, 1);
     setState({ ...state, responses: responseCopy, selectedResponseIndex: 0 });
     dispatch(setResponses({ responses: responseCopy }));
@@ -150,7 +150,7 @@ function Paths() {
     HTMLInputElement
   > = (e) => {
     const { name, value } = e.target;
-    const responseCopy = JSON.parse(JSON.stringify(state.responses));
+    const responseCopy = JSON.parse(JSON.stringify(responses));
     const newResponse = responseCopy[Number(name)];
     newResponse.code = Number(value);
 
@@ -161,7 +161,7 @@ function Paths() {
   };
   const manuallyAddRes: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     const { value } = e.target;
-    const responseCopy = JSON.parse(JSON.stringify(state.responses));
+    const responseCopy = JSON.parse(JSON.stringify(responses));
     try {
       const parsed = JSON.parse(value);
       responseCopy[state.selectedResponseIndex].res = parsed;
@@ -186,6 +186,8 @@ function Paths() {
       b = null;
     }
 
+     if(b) b = JSON.parse(b)
+
     // console.log(
     //   method,
     //   selectedUrl + path + extractParams(params) + extractQueries(queries),
@@ -195,13 +197,24 @@ function Paths() {
     //   tags,
     //   authd
     // );
+    let r1
+    const rgxlcl = '/^http:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/'
+    if (u.match(rgxlcl)) {
+      r1 = await makeRequest({
+        baseUrl: u,
+        method: m.toUpperCase(),
+        payload: b,
+        headers: reWriteHeader(h),
+      })
+    } else {
+      r1 = await makeProxyRequest({
+        baseUrl: u,
+        method: m.toUpperCase(),
+        payload: b,
+        headers: reWriteHeader(h),
+      });
+    }
 
-    const r1 = await makeProxyRequest({
-      baseUrl: u,
-      method: m.toUpperCase(),
-      payload: b,
-      headers: reWriteHeader(h),
-    });
     const codeRgx = new RegExp(/\d+/)
     const dataString = atob(r1.data.responseBody).trim()
     const status1 = (r1.data.responseBodyCode as string).match(codeRgx)?.[0]
@@ -337,7 +350,7 @@ function Paths() {
 
       <div className="elementContainer">
         <div className="fr">
-          {state.responses.map((response, index) => {
+          {responses.map((response, index) => {
             return (
               <div key={index} className="fr ml">
                 <button
@@ -372,7 +385,7 @@ function Paths() {
           <input
             onChange={handleResponseDescription}
             value={
-              state.responses[state.selectedResponseIndex]?.description || ""
+              responses[state.selectedResponseIndex]?.description || ""
             }
             placeholder="description"
           />
@@ -381,14 +394,14 @@ function Paths() {
           className="responseTextArea txtarea"
           onChange={manuallyAddRes}
           value={
-            typeof state.responses[state.selectedResponseIndex]?.res ===
+            typeof responses[state.selectedResponseIndex]?.res ===
             "object"
               ? JSON.stringify(
-                  state.responses[state.selectedResponseIndex]?.res,
+                  responses[state.selectedResponseIndex]?.res,
                   null,
                   " "
                 )
-              : state.responses[state.selectedResponseIndex]?.res
+              : responses[state.selectedResponseIndex]?.res
           }
         ></textarea>
       </div>

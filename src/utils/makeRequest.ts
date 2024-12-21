@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios"
 
 
-async function makeRequest(requestData: RequestData): Promise<AxiosResponse> {
+async function makeRequest(requestData: RequestData) {
     try {
         const { method, baseUrl, path, payload, headers, queries, params } = requestData;
         const url = `${baseUrl}${path||""}${formParams(params)}${formQueries(queries)}`;
@@ -11,7 +11,14 @@ async function makeRequest(requestData: RequestData): Promise<AxiosResponse> {
             method,
             headers,
             data: payload
-        }).then(response => response)
+        }).then(response => {
+            return {
+                data: {
+                    responseBodyCode: response.status,
+                    responseBody: btoa(response.data)
+                }
+            }
+        })
     } catch (error: any) {
         console.log(error)
         return error.response as AxiosResponse
