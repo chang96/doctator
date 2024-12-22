@@ -198,7 +198,7 @@ function Paths() {
     //   authd
     // );
     let r1
-    const rgxlcl = new RegExp("/^http:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/")
+    const rgxlcl = new RegExp(/^http:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/)
     if (u.match(rgxlcl)) {
       r1 = await makeRequest({
         baseUrl: u,
