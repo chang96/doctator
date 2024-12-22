@@ -11,7 +11,7 @@ export default function ResponseDetails() {
   const project = getProject(selectedProjectName)
   const {paths: {endpoints}} = project
 
-  return <div className="reference">
+  return <div className="">
     {endpoints[0].responses[0].code}
   </div>;
 }

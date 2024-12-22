@@ -1,7 +1,39 @@
 .reference {
-    background-color: gray;
-    width: 25%;
+    background-color: rgb(21, 21, 21);
+    width: 20%;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+}
+
+.tagspacing {
+    margin-top: 45px;
+}
+
+.tagname {
+    font-weight: 400;
+    color: white;
+    border-radius: 5px;
+    text-transform: capitalize;
+    letter-spacing: 2px;
+}
+
+.tagdetails {
+    color: rgb(206, 200, 200);
+    text-transform: capitalize;
+}
+
+.methods {
+    font-weight:bold;
+    font-size: small;
+}
+
+.pathname {
+    color: rgb(227, 222, 222);
+    font-size: small;
+    letter-spacing: 2px;
+}
+
+.tagoverflow {
+    overflow: auto;
 }
