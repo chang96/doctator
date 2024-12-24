@@ -106,7 +106,8 @@ function Paths() {
     baseUrl: string;
     selectedResponseIndex: number;
     responses: ResponseData[];
-  }>({ active: "url", baseUrl: "", selectedResponseIndex: 0, responses });
+    selectedEndpoint: number;
+  }>({ active: "url", baseUrl: "", selectedResponseIndex: 0, responses, selectedEndpoint: 0 });
 
   const dispatch: AppDispatch = useDispatch();
 
@@ -138,6 +139,7 @@ function Paths() {
       responses: [...responses, { code: 0, description: "", res: {} }],
       selectedResponseIndex: Number([...responses].length),
     });
+    dispatch(setResponses({ responses: [...responses, { code: 0, description: "", res: {} }] }));
   };
 
   const removeResponse = (index: number) => {
@@ -256,7 +258,7 @@ function Paths() {
     e
   ) => {
     const { id } = e.currentTarget;
-    setState({ ...state, selectedResponseIndex: Number(id) });
+    setState({ ...state, selectedResponseIndex:0, selectedEndpoint: Number(id) });
 
     dispatch(setSelectedEndpoint({ index: Number(id) }));
   };
@@ -280,11 +282,12 @@ function Paths() {
     };
 
     dispatch(setNewEnpoint({ endpoint: newEndpoint }));
-    setState({ ...state, responses: newEndpoint.responses });
+    setState({ ...state, responses: newEndpoint.responses, selectedEndpoint: endpointsArr.length, selectedResponseIndex: 0 });
   };
 
   const removeEndpoint = (index: number) => {
     dispatch(deleteEndpoint({ index }));
+    setState({...state, selectedEndpoint: 0, selectedResponseIndex: 0})
   };
 
   useEffect(() => {
@@ -423,7 +426,7 @@ function Paths() {
                 onClick={handleEndpointSelection}
               >
                 {endpoint}
-                {i !== state.selectedResponseIndex || "*"}
+                {i !== state.selectedEndpoint || "*"}
               </div>
             </div>
           ))}
