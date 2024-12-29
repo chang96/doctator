@@ -6,7 +6,9 @@ import { AppDispatch, RootState } from "../../store/store";
 type SecurityType = Record<string, boolean | Array<any>>;
 
 function AuthSelection() {
-  const {selectedProjectName: projectName} = useSelector((state: RootState) => state.requestConfig)
+  const {selectedProjectName: projectName, isPreview} = useSelector((state: RootState) => {
+    return {...state.requestConfig, ...state.preview}
+  })
   const projectConfiguration = getProject(projectName);
   const securityArr = projectConfiguration.config.security as SecurityType[];
   const securityWithValues = projectConfiguration.config.securityWithValues as Record<string, string>[]
@@ -66,11 +68,11 @@ function AuthSelection() {
 }
 
   return (
-    <div className="ov">
+    <div className="ov" style={{}}>
       {securityArr.map((sec, index) => {
         return (
-          <div className="m2 fr" key={index}>
-            <div>
+          <div className="m2 fr" key={index} style={{display: isPreview&&!(authd?.use && authd?.position - 1 === index) ?"none" : "flex"}}>
+            <div style={{display: isPreview?"none": "block"}}>
               <input
                 checked={
                   authd?.use && authd?.position - 1 === index ? true : false
@@ -84,7 +86,7 @@ function AuthSelection() {
             </div>
             <div>
               {Object.entries(sec).map(([k, _v], i) => {
-                return <div key={i}>{k}</div>;
+                return <div style={{}} key={i}><span style={{}}>{k}</span> | <span style={{color:"rgb(6, 247, 118)", textTransform:"lowercase"}}>string</span> | <span style={{color:"red", textTransform:"lowercase"}}>required</span></div>;
               })}
             </div>
           </div>
