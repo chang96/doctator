@@ -11,7 +11,6 @@ import Paths from "../paths";
 import styles from './styles.module.css'
 
 
-let mql = window.matchMedia('(max-width: 900px)')
 
 export default function Modal(): JSX.Element{
     const {displayModal: mod, selected } = useSelector((state: RootState) => state.modal)
@@ -40,8 +39,10 @@ export default function Modal(): JSX.Element{
       }, [selected]);
 
     return <div className={styles.m} style={{
-        width: mql.matches ? "100%" : "55%",
-        display: mod ? "flex" : "none",
+        width: "100%",
+        display: mod ? "block" : "none",
+        padding: "1%",
+        backgroundColor:"rgb(20, 20, 20)"
     }}>
         {state.selectedForm ? state.selectedForm === 'config' ? <Form /> : <Paths />  : "" }
     </div>

@@ -2,22 +2,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { getProject } from "../../utils/localstorageFuncs";
 import "./referenceDetails.css"
+import { returnTextColor } from "../../utils/helpers";
 
-function returnTextColor(text: string){
-  if (text.toLowerCase().includes("get")) {
-    return "yellow";
-  } else if (text.toLowerCase().includes("post")) {
-    return "orange";
-  } else if (text.toLowerCase().includes("put")) {
-    return "green";
-  } else if (text.toLowerCase().includes("patch")) {
-    return "brown";
-  } else if (text.toLowerCase().includes("option")){
-    return "pink"
-  } else {
-    return "yellow";
-  }
-}
 function getEndpointsByTagName (tagName: string, endpointArray: RequestConfiguration[]){
     return endpointArray.filter((endpoint) => {
         return endpoint.tags.includes(tagName)

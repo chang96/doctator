@@ -34,3 +34,69 @@ export const getSampleData = (selector: "/samplepath" | "/sampleconfig") => {
   }
   return c[selector]
 }
+
+export function capitalizeFirstLetter(val: string) {
+  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}
+
+export function returnTextColor(text: string, backgroundColor: boolean=false){
+  let color = ""
+  const colorMap: Record<string, string> = {
+    "get": "brown",
+    "post": "gray",
+    "put": "green",
+    "patch": "purple",
+    "option": "violet",
+
+    "string": "green",
+    "array": "purple",
+    "object": "violet",
+    "number": "brown",
+    "enum": "gray",
+    "[]string": "green"
+  }
+
+  const bgMap: Record<string, string> = {
+    "brown": "rgb(196, 164, 132)",
+    "orange": "rgb(255, 213, 128)",
+    "green": "#90EE90",
+    "pink": "#FFB6C1",
+    "blue": "#add8e6",
+    "gray": "#D3D3D3",
+    "purple": "#CBC3E3",
+    "#f0809c": "#f09380",
+    "violet": "#CF9FFF"
+  }
+  color = colorMap[text]
+
+  if (color === "") {
+    color = "violet";
+  }
+
+  if (backgroundColor){
+   color = bgMap[color]
+  }
+  return color === "green" ? "rgb(6, 247, 118)" : color
+}
+
+export function returnType (value: any): string {
+  const type = typeof value
+  if (type === "string" && (value as string).split(":").length > 1) {
+    const enums = (value as string).split(":")
+    if (enums.at(-1) === ".") enums.pop()
+    return `enum`
+  }
+  if (type === "object" && Array.isArray(value)) {
+    if (value[0]){
+      const res = [] as any[]
+      value.forEach(k => {
+        const t = typeof k
+        if (!res.includes(t)) res.push(t)
+      })
+      return `[]${res.join(" | ")}`
+    }
+    return "[]"
+  } 
+  return type.toLowerCase()
+}
+

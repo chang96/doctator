@@ -43,7 +43,8 @@ interface RequestConfiguration {
     summary: string;
     operationId: string;
     name: string;
-    responses: ResponseData[]
+    responses: ResponseData[],
+    mid?: number
   }
 
 type Tag = { name: string; description: string };

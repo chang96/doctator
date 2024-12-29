@@ -32,7 +32,6 @@
     white-space: nowrap;
     width: 500px;
     margin-top: 5px;
-
   }
 
 .elementContainer {
@@ -51,6 +50,9 @@
 
 .ov {
     overflow-x: auto;
+}
+.ovy {
+  overflow-y: auto;
 }
 
 .flex70 {
@@ -158,4 +160,144 @@ textarea {
   overflow: auto;                                 
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   white-space: pre;                            
+}
+.darkbackground {
+  background-color: rgb(20, 20, 20);
+}
+
+.tagname {
+  font-weight: bolder;
+  color: rgb(173, 171, 171);
+  border-radius: 5px;
+  text-transform: capitalize;
+  letter-spacing: 2px;
+  margin-bottom: 10%;
+}
+.pathandmethod {
+  color: whitesmoke;
+  margin-bottom: 18%;
+
+}
+.summary {
+  color: whitesmoke;
+  font-size: large;
+}
+.desc {
+  color: rgb(109, 108, 108);
+  letter-spacing: 2px;
+  font-size: medium;
+  text-transform: capitalize;
+  margin-top: 1%;
+}
+
+.pathandmethodandsend {
+  border: 1px solid rgb(74, 73, 73);
+  width: 98%;
+  height: 10%;
+  border-radius: 15px;
+  margin-top: 3%;
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  align-items: center;
+}
+.whiteonly {
+  color: whitesmoke;
+}
+.pathonly {
+  color: whitesmoke;
+  width: 70%;
+  word-wrap: break-word;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.method {
+  font-weight: bold;
+  font-size: large;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.sendbtn {
+  font-size: 15px;
+  color: whitesmoke;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: 3px;
+}
+
+.authorization {
+  font-size: 14px;
+  color: whitesmoke;
+  margin-top: 3%;
+}
+
+.requestbody {
+  font-size: 14px;
+  color: whitesmoke;
+  margin-top: 3%;
+}
+
+.titles {
+  color: #6c757d;
+}
+
+.bodyseparator {
+  border-color: #323233;
+  width: 40%;
+  margin: 0;
+}
+
+.queries {
+  font-size: 14px;
+  color: whitesmoke;
+  margin-top: 3%;
+  text-transform: lowercase;
+}
+.params {
+  font-size: 14px;
+  color: whitesmoke;
+  margin-top: 3%;
+  text-transform: lowercase;
+}
+
+.responses {
+  font-size: 14px;
+  color: whitesmoke;
+  margin-top: 3%;
+  text-transform: lowercase;
+}
+
+.makerequestcommands {
+  color: whitesmoke;
+  border: 1px solid rgb(37, 36, 36);
+  width: 80%;
+  height: 30%;
+  text-transform: lowercase;
+  overflow-x: auto;
+  border-radius: 15px;
+  padding: 1%;
+}
+
+.respreview {
+  color: #cc8f77;
+  border: 1px solid rgb(37, 36, 36);
+  width: 80%;
+  height: 60%;
+  border-radius: 15px;
+  padding: 1%;
+  overflow-x: auto;
+  overflow-y: auto;
+
+}
+
+.reqrescontainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
 }

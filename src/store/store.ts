@@ -3,12 +3,14 @@ import modalReducer from "../slices/modalSlices";
 import configReducer from "../slices/docsConfigSlices"
 import requestConfigReducer from "../slices/request";
 import selectedEndpointReducer from "../slices/endpointsConfigSlices";
+import previewReducer from "../slices/preview";
 const store = configureStore({
   reducer: {
     modal: modalReducer,
     config: configReducer,
     selectedEndpoint: selectedEndpointReducer,
     requestConfig: requestConfigReducer,
+    preview: previewReducer
   },
 });
 

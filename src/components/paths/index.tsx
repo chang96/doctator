@@ -1,34 +1,54 @@
 import "./paths.css";
 
 import AuthSelection from "../../elements/authSelection";
-import Description from "../../elements/description";
-import Body from "../../elements/body";
-import Headers from "../../elements/headers";
-import Params from "../../elements/params";
-import PathText from "../../elements/paths";
-import Queries from "../../elements/queries";
-import Url from "../../elements/url";
-import TagsSelection from "../../elements/tagsSelection";
+// import Description from "../../elements/description";
+// import Body from "../../elements/body";
+// import Headers from "../../elements/headers";
+// import Params from "../../elements/params";
+// import PathText from "../../elements/paths";
+// import Queries from "../../elements/queries";
+// import Url from "../../elements/url";
+// import TagsSelection from "../../elements/tagsSelection";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
 import {
-  setMethod,
-  setNewEnpoint,
+  // setMethod,
+  // setNewEnpoint,
   setSelectedEndpoint,
-  deleteEndpoint,
+  // deleteEndpoint,
   setSelectedProjectName,
   setResponses,
 } from "../../slices/request";
-import { extractParams, extractQueries } from "../../utils/helpers";
+import {
+  extractParams,
+  extractQueries,
+  returnTextColor,
+  returnType,
+} from "../../utils/helpers";
 import { getProject } from "../../utils/localstorageFuncs";
 import { makeProxyRequest, makeRequest } from "../../utils/makeRequest";
+import ExpandableStructure from "../../elements/expandable/expandable";
 function reWriteHeader(h: Record<string, string>): Record<string, string> {
   const res = {} as Record<string, string>;
   for (let key in h) {
     res[String(key)] = h[key];
   }
   return res;
+}
+
+function getEndpointsByTagName(
+  tagName: string,
+  endpointArray: RequestConfiguration[]
+) {
+  if (tagName === "default"){
+    return endpointArray.filter((endpoint) => {
+      return endpoint.tags.length === 0 || !endpoint.tags;
+    });
+  }
+  return endpointArray.filter((endpoint) => {
+    return endpoint.tags.includes(tagName);
+  });
 }
 
 type PathElements = {
@@ -45,29 +65,29 @@ type PathElements = {
 
 type PathElementsKey = keyof PathElements;
 
-const pathElements = {
-  description: <Description />,
-  auth: <AuthSelection />,
-  url: <Url />,
-  path: <PathText />,
-  queries: <Queries />,
-  headers: <Headers />,
-  params: <Params />,
-  body: <Body />,
-  tags: <TagsSelection />,
-};
+// const pathElements = {
+//   description: <Description />,
+//   auth: <AuthSelection />,
+//   url: <Url />,
+//   path: <PathText />,
+//   queries: <Queries />,
+//   headers: <Headers />,
+//   params: <Params />,
+//   body: <Body />,
+//   tags: <TagsSelection />,
+// };
 
-const pathElementsArray = [
-  { name: "Url", id: "url" },
-  { name: "Path", id: "path" },
-  { name: "Params", id: "params" },
-  { name: "Queries", id: "queries" },
-  { name: "Headers", id: "headers" },
-  { name: "Auth", id: "auth" },
-  { name: "Body", id: "body" },
-  { name: "Description", id: "description" },
-  { name: "Tags", id: "tags" },
-];
+// const pathElementsArray = [
+//   { name: "Url", id: "url" },
+//   { name: "Path", id: "path" },
+//   { name: "Params", id: "params" },
+//   { name: "Queries", id: "queries" },
+//   { name: "Headers", id: "headers" },
+//   { name: "Auth", id: "auth" },
+//   { name: "Body", id: "body" },
+//   { name: "Description", id: "description" },
+//   { name: "Tags", id: "tags" },
+// ];
 
 function Paths() {
   const {
@@ -78,8 +98,8 @@ function Paths() {
     requestQueries: queries,
     headers,
     requestBody: body,
-    // description,
-    // summary,
+    description,
+    summary,
     // name,
     // operationId,
     // tags,
@@ -91,15 +111,17 @@ function Paths() {
   );
 
   const endpointsArr = useSelector(
-    (state: RootState) => state.requestConfig.endpoints
+    (state: RootState) => state.requestConfig.endpoints.map((x, i) => {
+      return {...x, mid: i}
+    })
   );
   const selectedProjectName = useSelector(
     (state: RootState) => state.requestConfig.selectedProjectName
   );
 
-  const endpoints = endpointsArr.map((x: any) =>
-    `${x.method} ${x.path}`.toLowerCase()
-  );
+  // const endpoints = endpointsArr.map((x: any) =>
+  //   `${x.method} ${x.path}`.toLowerCase()
+  // );
 
   const [state, setState] = useState<{
     active: PathElementsKey;
@@ -107,79 +129,91 @@ function Paths() {
     selectedResponseIndex: number;
     responses: ResponseData[];
     selectedEndpoint: number;
-  }>({ active: "url", baseUrl: "", selectedResponseIndex: 0, responses, selectedEndpoint: 0 });
+    selectedTag: number;
+  }>({
+    active: "url",
+    baseUrl: "",
+    selectedResponseIndex: 0,
+    responses,
+    selectedEndpoint: 0,
+    selectedTag: 0,
+  });
 
   const dispatch: AppDispatch = useDispatch();
 
-  const handleActiveElement = (e: React.MouseEvent<HTMLDivElement>) => {
-    setState({ ...state, active: e.currentTarget.id as PathElementsKey });
-  };
-  const handleMethodChange: React.ChangeEventHandler<HTMLSelectElement> = (
-    e
-  ) => {
-    const { value } = e.target;
-    dispatch(setMethod({ method: value }));
-  };
+  // const handleActiveElement = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   setState({ ...state, active: e.currentTarget.id as PathElementsKey });
+  // };
+  // const handleMethodChange: React.ChangeEventHandler<HTMLSelectElement> = (
+  //   e
+  // ) => {
+  //   const { value } = e.target;
+  //   dispatch(setMethod({ method: value }));
+  // };
   const handleResponseCodeSelection = (index: number) => {
     setState({ ...state, selectedResponseIndex: Number(index) });
   };
-  const handleResponseDescription: React.ChangeEventHandler<
-    HTMLInputElement
-  > = (e) => {
-    const { value } = e.target;
-    const responseCopy = JSON.parse(JSON.stringify(responses));
-    responseCopy[state.selectedResponseIndex].description = value;
-    setState({ ...state, responses: responseCopy });
-    dispatch(setResponses({ responses: responseCopy }));
-  };
+  // const handleResponseDescription: React.ChangeEventHandler<
+  //   HTMLInputElement
+  // > = (e) => {
+  //   const { value } = e.target;
+  //   const responseCopy = JSON.parse(JSON.stringify(responses));
+  //   responseCopy[state.selectedResponseIndex].description = value;
+  //   setState({ ...state, responses: responseCopy });
+  //   dispatch(setResponses({ responses: responseCopy }));
+  // };
 
-  const handleAddNewResponseManually = () => {
-    setState({
-      ...state,
-      responses: [...responses, { code: 0, description: "", res: {} }],
-      selectedResponseIndex: Number([...responses].length),
-    });
-    dispatch(setResponses({ responses: [...responses, { code: 0, description: "", res: {} }] }));
-  };
+  // const handleAddNewResponseManually = () => {
+  //   setState({
+  //     ...state,
+  //     responses: [...responses, { code: 0, description: "", res: {} }],
+  //     selectedResponseIndex: Number([...responses].length),
+  //   });
+  //   dispatch(
+  //     setResponses({
+  //       responses: [...responses, { code: 0, description: "", res: {} }],
+  //     })
+  //   );
+  // };
 
-  const removeResponse = (index: number) => {
-    const responseCopy = JSON.parse(JSON.stringify(responses));
-    responseCopy.splice(index, 1);
-    setState({ ...state, responses: responseCopy, selectedResponseIndex: 0 });
-    dispatch(setResponses({ responses: responseCopy }));
-  };
-  const handleResponseCodeManually: React.ChangeEventHandler<
-    HTMLInputElement
-  > = (e) => {
-    const { name, value } = e.target;
-    const responseCopy = JSON.parse(JSON.stringify(responses));
-    const newResponse = responseCopy[Number(name)];
-    newResponse.code = Number(value);
+  // const removeResponse = (index: number) => {
+  //   const responseCopy = JSON.parse(JSON.stringify(responses));
+  //   responseCopy.splice(index, 1);
+  //   setState({ ...state, responses: responseCopy, selectedResponseIndex: 0 });
+  //   dispatch(setResponses({ responses: responseCopy }));
+  // };
+  // const handleResponseCodeManually: React.ChangeEventHandler<
+  //   HTMLInputElement
+  // > = (e) => {
+  //   const { name, value } = e.target;
+  //   const responseCopy = JSON.parse(JSON.stringify(responses));
+  //   const newResponse = responseCopy[Number(name)];
+  //   newResponse.code = Number(value);
 
-    responseCopy[Number(name)] = newResponse;
+  //   responseCopy[Number(name)] = newResponse;
 
-    setState({ ...state, responses: responseCopy });
-    dispatch(setResponses({ responses: responseCopy }));
-  };
-  const manuallyAddRes: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-    const { value } = e.target;
-    const responseCopy = JSON.parse(JSON.stringify(responses));
-    try {
-      const parsed = JSON.parse(value);
-      responseCopy[state.selectedResponseIndex].res = parsed;
-      dispatch(setResponses({ responses: responseCopy }));
-    } catch (error) {
-      responseCopy[state.selectedResponseIndex].res = value;
-    }
+  //   setState({ ...state, responses: responseCopy });
+  //   dispatch(setResponses({ responses: responseCopy }));
+  // };
+  // const manuallyAddRes: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+  //   const { value } = e.target;
+  //   const responseCopy = JSON.parse(JSON.stringify(responses));
+  //   try {
+  //     const parsed = JSON.parse(value);
+  //     responseCopy[state.selectedResponseIndex].res = parsed;
+  //     dispatch(setResponses({ responses: responseCopy }));
+  //   } catch (error) {
+  //     responseCopy[state.selectedResponseIndex].res = value;
+  //   }
 
-    setState({ ...state, responses: responseCopy });
-  };
+  //   setState({ ...state, responses: responseCopy });
+  // };
   const sendRequest = async () => {
     const project = getProject(selectedProjectName);
     const m = method;
     const u =
       selectedUrl + path + extractParams(params) + extractQueries(queries);
-    const s = authd.use
+    const s = authd.use && project.config.securityWithValues && (project.config.securityWithValues as Array<Record<string, string>>).length > 0
       ? project.config.securityWithValues[authd.position - 1]
       : {};
     const h = { ...s, ...headers };
@@ -188,7 +222,7 @@ function Paths() {
       b = null;
     }
 
-     if(b) b = JSON.parse(b)
+    if (b) b = JSON.parse(b);
 
     // console.log(
     //   method,
@@ -199,33 +233,35 @@ function Paths() {
     //   tags,
     //   authd
     // );
-    let r1
-    const rgxlcl = new RegExp(/^http:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/)
+    let r1;
+    const rgxlcl = new RegExp(/^http:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/);
+    const rewrittenHeaders = reWriteHeader(h)
+
     if (u.match(rgxlcl)) {
       r1 = await makeRequest({
         baseUrl: u,
         method: m.toUpperCase(),
         payload: b,
-        headers: reWriteHeader(h),
-      })
+        headers: rewrittenHeaders,
+      });
     } else {
       r1 = await makeProxyRequest({
         baseUrl: u,
         method: m.toUpperCase(),
         payload: b,
-        headers: reWriteHeader(h),
+        headers: rewrittenHeaders,
       });
     }
 
-    const codeRgx = new RegExp(/\d+/)
-    const dataString = atob(r1.data.responseBody).trim()
-    const status1 = (r1.data.responseBodyCode as string).match(codeRgx)?.[0]
-    const status = Number(status1)
-    let data: any
+    const codeRgx = new RegExp(/\d+/);
+    const dataString = atob(r1.data.responseBody).trim();
+    const status1 = (r1.data.responseBodyCode as string).match(codeRgx)?.[0];
+    const status = Number(status1);
+    let data: any;
     try {
-      data = JSON.parse(dataString)
-    } catch(e) {
-      data = dataString
+      data = JSON.parse(dataString);
+    } catch (e) {
+      data = dataString;
     }
     const responseCopy = JSON.parse(JSON.stringify(responses));
     const codeFound = responseCopy
@@ -239,7 +275,6 @@ function Paths() {
       });
       dispatch(setResponses({ responses: responseCopy }));
       setState({ ...state, responses: responseCopy });
-
     }
 
     if (status && !codeFound) {
@@ -250,7 +285,6 @@ function Paths() {
       });
       dispatch(setResponses({ responses: responseCopy }));
       setState({ ...state, responses: responseCopy });
-
     }
   };
 
@@ -258,46 +292,142 @@ function Paths() {
     e
   ) => {
     const { id } = e.currentTarget;
-    setState({ ...state, selectedResponseIndex:0, selectedEndpoint: Number(id) });
+    const tag = e.currentTarget.dataset.tag;
+
+    setState({
+      ...state,
+      selectedResponseIndex: 0,
+      selectedEndpoint: Number(id),
+      selectedTag: Number(tag),
+    });
 
     dispatch(setSelectedEndpoint({ index: Number(id) }));
   };
 
-  const addNewEndpoint = () => {
-    const newEndpoint: RequestConfiguration = {
-      baseUrl: selectedUrl,
-      headers: {},
-      requestQueries: [],
-      requestParams: [],
-      authd: {} as Authd,
-      method: "get",
-      path: "",
-      requestBody: {},
-      description: "",
-      tags: [],
-      summary: "",
-      operationId: "",
-      name: "",
-      responses: [{ res: {}, code: 0, description: "" }],
-    };
+  // const addNewEndpoint = () => {
+  //   const newEndpoint: RequestConfiguration = {
+  //     baseUrl: selectedUrl,
+  //     headers: {},
+  //     requestQueries: [],
+  //     requestParams: [],
+  //     authd: {} as Authd,
+  //     method: "get",
+  //     path: "",
+  //     requestBody: {},
+  //     description: "",
+  //     tags: [],
+  //     summary: "",
+  //     operationId: "",
+  //     name: "",
+  //     responses: [{ res: {}, code: 0, description: "" }],
+  //   };
 
-    dispatch(setNewEnpoint({ endpoint: newEndpoint }));
-    setState({ ...state, responses: newEndpoint.responses, selectedEndpoint: endpointsArr.length, selectedResponseIndex: 0 });
-  };
+  //   dispatch(setNewEnpoint({ endpoint: newEndpoint }));
+  //   setState({
+  //     ...state,
+  //     responses: newEndpoint.responses,
+  //     selectedEndpoint: endpointsArr.length,
+  //     selectedResponseIndex: 0,
+  //   });
+  // };
 
-  const removeEndpoint = (index: number) => {
-    dispatch(deleteEndpoint({ index }));
-    setState({...state, selectedEndpoint: 0, selectedResponseIndex: 0})
-  };
+  // const removeEndpoint = (index: number) => {
+  //   dispatch(deleteEndpoint({ index }));
+  //   setState({ ...state, selectedEndpoint: 0, selectedResponseIndex: 0 });
+  // };
 
   useEffect(() => {
     dispatch(setSelectedProjectName({ projectName: selectedProjectName }));
   }, [dispatch, selectedProjectName]);
+
+  const { config } = getProject(selectedProjectName);
+  const tagsArr = [...config.tags, {name:"default", description:"untagged endpoints"}] as Tag[];
+  const isOk = responses.filter(x => String(x.code) === "200")[0] || {res: {}}
+  const project = getProject(selectedProjectName);
+  const s = authd.use && project.config.securityWithValues && (project.config.securityWithValues as Array<Record<string, string>>).length > 0
+  ? project.config.securityWithValues[authd.position - 1]
+  : {};
+const h = { ...s, ...headers };
+const rewrittenHeaders = reWriteHeader(h)
   return (
-    <div>
-      <div className="fr2">
-        <div className="flex15">
-          <select
+    <div style={{ height: "98%" }}>
+      <div className="darkbackground" style={{ color:"whitesmoke", width:"98%", height: "10%", fontSize:"19px", fontWeight:"bold", borderBottom:"1px solid rgb(37, 36, 36)", borderRadius:"15px"}}>{project.config.info.title} ({project.config.info.version && <span>{project.config.info.version}</span>})</div>
+      <div style={{ height: "100%", display: "flex", flexDirection: "row" }}>
+        <div
+          style={{ width: "20%", height: "88%" }}
+          className="ovy darkbackground"
+        >
+          <div
+            style={{
+              display: "flex",
+              marginLeft: "30%",
+              flexDirection: "column",
+              justifyContent: "space-around",
+              maxHeight: "90%",
+            }}
+            className="ovy"
+          >
+            {tagsArr.map(({ name }, i) => {
+              const sortedTags = getEndpointsByTagName(name, endpointsArr)
+              return (
+                <div key={i}>
+                  <div className="mt tagname">-{name}</div>
+                  <div>
+                    {sortedTags.map(
+                      (endpoint, j: number) => (
+                        <div key={i + j} className="">
+                          {/* <button
+                onClick={() => removeEndpoint(i)}
+                className="remove-button"
+              >
+                X
+              </button> */}
+                          <div
+                            className="pointa"
+                            key={i + j}
+                            id={`${endpoint.mid}`}
+                            data-tag={`${i}`}
+                            onClick={handleEndpointSelection}
+                            style={{marginBottom: "4%"}}
+                          >
+                            <span className="pathandmethod">
+                              <span
+                                style={{
+                                  color: returnTextColor(endpoint.method),
+                                }}
+                              >
+                                {endpoint.method}
+                              </span>{" "}
+                              <span>{endpoint.path}</span>
+                              {!(
+                                endpoint.mid ===
+                                  state.selectedEndpoint 
+                              ) || "*"}
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {/* <div onClick={addNewEndpoint} className="pointa add-button">
+          +
+        </div> */}
+        </div>
+
+        <div
+          style={{ width: "50%", height: "88%" }}
+          className="ovy darkbackground"
+        >
+          <div className="summary mt">{summary}</div>
+          <div className="desc">{description}</div>
+          <div></div>
+          <div className="pathandmethodandsend">
+            <div style={{width:"15%", color: returnTextColor(method) }} className="method">
+              {/* <select
             className="txt"
             value={method}
             style={{ height: "21px" }}
@@ -308,92 +438,197 @@ function Paths() {
             <option value={"put"}>PUT</option>
             <option value={"patch"}>PATCH</option>
             <option value={"delete"}>DELETE</option>
-          </select>
-        </div>
-        <div className="flex70">
-          <input
+          </select> */}
+              {method}
+            </div>
+            {/* <input
             value={
-              selectedUrl +
+              // selectedUrl +
               path +
               extractParams(params) +
               extractQueries(queries)
             }
             readOnly
             className="fw"
-          />
-        </div>
-        <div style={{ width: "13%", marginLeft: "2%" }}>
-          <button
-            className="txt"
-            style={{ width: "100%", height: "22px" }}
-            onClick={sendRequest}
-          >
-            send
-          </button>
-        </div>
-      </div>
-
-      <div className="fr1 ov">
-        {pathElementsArray.map((path, i) => {
-          return (
-            <div
-              key={i}
-              onClick={handleActiveElement}
-              className="pointa"
-              id={path.id}
-            >
-              {state.active !== path.id || "*"}
-              {path.name}
+          /> */}
+            <div className="pathonly ovy">
+              {path + extractParams(params) + extractQueries(queries)}
             </div>
-          );
-        })}
-      </div>
+            <div style={{width: "15%", display: "flex", flexDirection: "row", justifyContent:"space-around"}}>
+              <button
+                className="sendbtn"
+                style={{ width: "70%", backgroundColor: returnTextColor(method, true) }}
+                onClick={sendRequest}
+              >
+                send
+              </button>
+            </div>
+          </div>
+          <div style={{color:"white"}}></div>
+          
+          {authd.use && <hr></hr>}
 
-      <div className="elementContainer ov">{pathElements[state.active]}</div>
+          {authd.use && <div className="authorization">
+            <div className="titles">Authorization</div>
+            <div>
+              <AuthSelection />
+            </div>
+          </div>}
+          
+          {body && <hr></hr>}
+          {
+            body && <div className="requestbody">
+            <div className="titles">Body</div>
+            <div>
+              { Object.keys(body).map((k) => {
+                const bodyType = returnType(body[k])
+                const rgx = new RegExp(/\.|:/g)
+                const enumOptions = bodyType === "enum" ? `-${body[k].replace(rgx, " ")}` : ""
+                const objectOrArray = typeof body[k] === "object"
+                return (
+                  <div style={{display: "flex", flexDirection:"row"}}>
+                    <div style={{textTransform: "lowercase", width:"50%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                    <div style={{marginBottom:"3%"}}> {objectOrArray?<ExpandableStructure keyName={k} data={body[k]} /> : k } </div>
+                    <div> <span style={{color: returnTextColor(bodyType)}}>{bodyType}</span></div>
+                  </div>
+                  <div style={{textTransform: "lowercase"}}>
+                    {(enumOptions)}
+                  </div>
+                  </div>
+                )
+              }) }
+            </div>
+            </div>
+    
+          }
+          {queries && queries.length > 0 && <hr></hr>}
+          {
+            queries && queries.length > 0 && 
+            <div className="queries">
+            <div className="titles">Query</div>
+            <div>
+              {queries.map((q, i) => {
+                const enumOrstring = q?.staticField?.length === 0 || !q.staticField ? "string" : "enum"
+                const enumm= q?.staticField && q?.staticField?.length > 0 ? q.staticField.join(" ") : "" 
+                return (
+                  <div key={i}>
+                    <span>{q.name}</span> | <span style={{color: returnTextColor(enumOrstring)}}>{enumOrstring}</span> {enumm !== "" && <span> | {enumm}</span> } 
+                  </div>
+                )
+              })}
+            </div>
+            </div>
+    
+          }
 
-      <div className="elementContainer">
+          {params && params.length > 0 && <hr></hr>}
+          {
+            params && params.length > 0 && <div className="params">
+            <div className="titles">Param</div>
+            <div>
+              {params.map((p, i) => {
+                const [name, ] = p.split(".")
+                const enumOrstring = "string"
+                return (
+                  <div key={i}>
+                    <span>{name}</span> | <span style={{color: returnTextColor(enumOrstring)}}>{enumOrstring}</span>
+                  </div>
+                )
+              })}
+            </div>
+            </div>
+    
+          }
+
+          {responses && responses.length > 0 && <hr></hr>}
+          {
+            responses && responses.length > 0 && <div className="responses">
+            <div className="titles">Response</div>
+            <div>
+            { Object.keys(isOk["res"]).map((k, i) => {
+                const bodyType = returnType(isOk["res"][k])
+                const rgx = new RegExp(/\.|:/g)
+                const enumOptions = bodyType === "enum" ? `-${isOk["res"][k].replace(rgx, " ")}` : ""
+                const objectOrArray = typeof isOk["res"][k] === "object"
+                return (
+                  <div key={i} style={{display: "flex", flexDirection:"row"}}>
+                    <div style={{textTransform: "lowercase", width:"50%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                    <div style={{marginBottom:"3%"}}> {objectOrArray?<ExpandableStructure keyName={k} data={isOk["res"][k]} /> : k } </div>
+                    <div> <span style={{color: returnTextColor(bodyType)}}>{bodyType}</span></div>
+                  </div>
+                  <div style={{textTransform: "lowercase"}}>
+                    {(enumOptions)}
+                  </div>
+                  </div>
+                )
+              }) }
+            </div>
+            </div>
+    
+          }
+
+        </div>
+        <div style={{ width: "28%", height: "88%" }} className="ovy darkbackground reqrescontainer">
+          <div className="mt makerequestcommands">
+            <div><span style={{color:"violet"}}>curl</span> <span>--request</span> <span style={{textTransform:"uppercase", color: returnTextColor(method.toLowerCase())}}>{method}</span> \</div> 
+            <div style={{textWrap:"nowrap"}}>--url <span style={{color:"#cc8f77"}}>{(selectedUrl+path+extractParams(params)+extractQueries(queries))}</span> \ </div>
+            
+            {Object.entries(rewrittenHeaders).map(([k, v]: Array<string>) => {
+              return <div style={{color:"whitesmoke"}}> --header <span style={{color:"#cc8f77"}}>'{k}: {v}'</span> \</div>
+            })}
+            {/* {body && <div style={{width:"120%",display:"flex", flexDirection: "row", justifyContent:"space-between"}} ><div style={{}}>--data </div> <div><pre style={{backgroundColor:"",marginLeft:"-1%", marginTop:"-0.01%"}}><code>{JSON.stringify(body, null, " ")}</code></pre></div></div>} */}
+            {body && <div style={{display: "flex", width: "120%"}}><span style={{}}>--data  </span> <pre style={{marginTop:"-0.1%", marginLeft:"1%", color:"#cc8f77"}}><code>{JSON.stringify(body, null, " ")}</code></pre></div> }
+
+          </div>
+
+          <div className="respreview">
+
         <div className="fr">
           {responses.map((response, index) => {
+            const selectedRes = state.selectedResponseIndex === index
             return (
               <div key={index} className="fr ml">
-                <button
+                {/* <button
                   onClick={() => removeResponse(index)}
                   className="remove-button"
                 >
                   X
-                </button>
+                </button> */}
                 <div
                   onClick={() => handleResponseCodeSelection(index)}
                   className="pointa"
                   key={index}
+                  style={{padding: "3%", borderRadius:"4px",  marginTop:"2px", color: selectedRes? "rgb(6, 247, 118)" : "rgb(6, 247, 118)", backgroundColor: selectedProjectName ? "": ""}}
                 >
-                  <input
+                  {/* <input
                     onChange={handleResponseCodeManually}
                     name={`${index}`}
                     style={{ width: "25px" }}
                     value={response.code}
-                  />
+                  /> */}
+                  {response.code}
+                  
                 </div>
               </div>
             );
           })}
-          <div
+          {/* <div
             onClick={() => handleAddNewResponseManually()}
             className="pointa add-button"
           >
             +
-          </div>
+          </div> */}
         </div>
         <div>
-          <input
+          {/* <input
             onChange={handleResponseDescription}
             value={
               responses[state.selectedResponseIndex]?.description || ""
             }
             placeholder="description"
-          />
+          /> */}
         </div>
-        <textarea
+        {/* <textarea
           className="responseTextArea txtarea"
           onChange={manuallyAddRes}
           value={
@@ -406,33 +641,17 @@ function Paths() {
                 )
               : responses[state.selectedResponseIndex]?.res
           }
-        ></textarea>
-      </div>
-
-      <div className="frpath mt">
-        <div className="ov fr1">
-          {endpoints.map((endpoint: any, i: number) => (
-            <div key={i} className="frpath">
-              <button
-                onClick={() => removeEndpoint(i)}
-                className="remove-button"
-              >
-                X
-              </button>
-              <div
-                className="pointa"
-                key={i}
-                id={`${i}`}
-                onClick={handleEndpointSelection}
-              >
-                {endpoint}
-                {i !== state.selectedEndpoint || "*"}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div onClick={addNewEndpoint} className="pointa add-button">
-          +
+        ></textarea> */}
+        <hr></hr>
+        <pre><code style={{textTransform:"lowercase"}}>{typeof responses[state.selectedResponseIndex]?.res ===
+            "object"
+              ? JSON.stringify(
+                  responses[state.selectedResponseIndex]?.res,
+                  null,
+                  " "
+                )
+              : responses[state.selectedResponseIndex]?.res}</code></pre>
+          </div>
         </div>
       </div>
     </div>
