@@ -6,8 +6,11 @@ import { AppDispatch, RootState } from "../../store/store";
 type SecurityType = Record<string, boolean | Array<any>>;
 
 function AuthSelection() {
-  const {selectedProjectName: projectName, isPreview} = useSelector((state: RootState) => {
-    return {...state.requestConfig, ...state.preview}
+  const {selectedProjectName: projectName} = useSelector((state: RootState) => {
+    return state.requestConfig
+  })
+  const {isPreview} = useSelector((state: RootState) => {
+    return state.preview
   })
   const projectConfiguration = getProject(projectName);
   const securityArr = projectConfiguration.config.security as SecurityType[];
@@ -86,7 +89,7 @@ function AuthSelection() {
             </div>
             <div>
               {Object.entries(sec).map(([k, _v], i) => {
-                return <div style={{}} key={i}><span style={{}}>{k}</span> | <span style={{color:"rgb(6, 247, 118)", textTransform:"lowercase"}}>string</span> | <span style={{color:"red", textTransform:"lowercase"}}>required</span></div>;
+                return <div style={{}} key={i}><span style={{textTransform:"lowercase"}}>{k}</span><span style={{color:"red", textTransform:"lowercase"}}>*</span> | <span style={{color:"rgb(6, 247, 118)", textTransform:"lowercase"}}>string</span></div>;
               })}
             </div>
           </div>

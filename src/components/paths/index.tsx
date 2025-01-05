@@ -109,12 +109,12 @@ function Paths() {
     (state: RootState) =>
       state.requestConfig.endpoints[state.requestConfig.selectedEndpoint]
   );
-
-  const endpointsArr = useSelector(
-    (state: RootState) => state.requestConfig.endpoints.map((x, i) => {
-      return {...x, mid: i}
-    })
+  const endpointsFullArr = useSelector(
+    (state: RootState) => state.requestConfig.endpoints
   );
+  const endpointsArr = endpointsFullArr.map((x, i) => {
+    return {...x, mid: i}
+  })
   const selectedProjectName = useSelector(
     (state: RootState) => state.requestConfig.selectedProjectName
   );
@@ -342,7 +342,7 @@ function Paths() {
 
   const { config } = getProject(selectedProjectName);
   const tagsArr = [...config.tags, {name:"default", description:"untagged endpoints"}] as Tag[];
-  const isOk = responses.filter(x => String(x.code) === "200")[0] || {res: {}}
+  const isOk = [...responses].sort((a,b) => a.code - b.code)[0] || {res: {}}
   const project = getProject(selectedProjectName);
   const s = authd.use && project.config.securityWithValues && (project.config.securityWithValues as Array<Record<string, string>>).length > 0
   ? project.config.securityWithValues[authd.position - 1]
@@ -480,13 +480,13 @@ const rewrittenHeaders = reWriteHeader(h)
             body && <div className="requestbody">
             <div className="titles">Body</div>
             <div>
-              { Object.keys(body).map((k) => {
+              { Object.keys(body).map((k, j) => {
                 const bodyType = returnType(body[k])
                 const rgx = new RegExp(/\.|:/g)
                 const enumOptions = bodyType === "enum" ? `-${body[k].replace(rgx, " ")}` : ""
                 const objectOrArray = typeof body[k] === "object"
                 return (
-                  <div style={{display: "flex", flexDirection:"row"}}>
+                  <div key={j} style={{display: "flex", flexDirection:"row"}}>
                     <div style={{textTransform: "lowercase", width:"50%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
                     <div style={{marginBottom:"3%"}}> {objectOrArray?<ExpandableStructure keyName={k} data={body[k]} /> : k } </div>
                     <div> <span style={{color: returnTextColor(bodyType)}}>{bodyType}</span></div>
@@ -573,8 +573,8 @@ const rewrittenHeaders = reWriteHeader(h)
             <div><span style={{color:"violet"}}>curl</span> <span>--request</span> <span style={{textTransform:"uppercase", color: returnTextColor(method.toLowerCase())}}>{method}</span> \</div> 
             <div style={{textWrap:"nowrap"}}>--url <span style={{color:"#cc8f77"}}>{(selectedUrl+path+extractParams(params)+extractQueries(queries))}</span> \ </div>
             
-            {Object.entries(rewrittenHeaders).map(([k, v]: Array<string>) => {
-              return <div style={{color:"whitesmoke"}}> --header <span style={{color:"#cc8f77"}}>'{k}: {v}'</span> \</div>
+            {Object.entries(rewrittenHeaders).map(([k, v]: Array<string>, i) => {
+              return <div key={i} style={{color:"whitesmoke"}}> --header <span style={{color:"#cc8f77"}}>'{k}: {v}'</span> \</div>
             })}
             {/* {body && <div style={{width:"120%",display:"flex", flexDirection: "row", justifyContent:"space-between"}} ><div style={{}}>--data </div> <div><pre style={{backgroundColor:"",marginLeft:"-1%", marginTop:"-0.01%"}}><code>{JSON.stringify(body, null, " ")}</code></pre></div></div>} */}
             {body && <div style={{display: "flex", width: "120%"}}><span style={{}}>--data  </span> <pre style={{marginTop:"-0.1%", marginLeft:"1%", color:"#cc8f77"}}><code>{JSON.stringify(body, null, " ")}</code></pre></div> }
