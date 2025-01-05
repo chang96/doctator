@@ -77,10 +77,20 @@ async function r(reqData: RequestData) {
     }
 }
 
+async function getById (id:string){
+    try {
+        const res = await axios.get(`https://gen-doc.sandymoon.com.ng/get-document?id=${id}`)
+        return res.data
+    } catch (error: any) {
+        throw error
+    }
+}
+
 export {
     makeRequest,
     r,
-    makeProxyRequest
+    makeProxyRequest,
+    getById
 }
 
 
