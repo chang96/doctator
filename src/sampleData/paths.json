@@ -64,11 +64,47 @@
         "manyoptions": "option1:option2",
         "singleoption": "option1:.",
         "objectoption": {
-          "name": "ping:pong"
+          "name": "ping"
         },
         "arrayoption": ["ping", "pingpong"],
         "stringoption": "pingpong"
       },
+      "requestBodyDetails": [
+        {
+          "name": "name",
+          "value": "ping",
+          "description": "ping description"
+        },
+        {
+          "name": "manyoptions",
+          "value": "option1",
+          "description": "multiple options",
+          "staticFields": ["option1", "option2"]
+        },
+        {
+          "name": "singleoption",
+          "value": "option1",
+          "description": "single option",
+          "staticFields": ["option1"]
+        },
+        {
+          "name": "objectoption",
+          "value": {
+            "name": "ping"
+          },
+          "description": "object option"
+        },
+        {
+          "name": "arrayoption",
+          "value": ["ping", "pingpong"],
+          "description": "array option"
+        },
+        {
+          "name": "stringoption",
+          "value": "pingpong",
+          "description": "string option"
+        }
+      ],
       "authd": {
         "use": true,
         "position": 3
@@ -104,6 +140,23 @@
           "description": "auth ping endpoint"
         }
       },
+      "requestBodyDetails": [
+        {
+          "name": "name",
+          "value": "authdping",
+          "required": true,
+          "description": "name"
+        },
+        {
+          "name": "details",
+          "value": {
+            "tags": ["authping"],
+            "description": "auth ping endpoint"
+          },
+          "required": true,
+          "description": "details"
+        }
+      ],
       "authd": {
         "use": true,
         "position": 1
