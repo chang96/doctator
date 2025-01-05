@@ -9,7 +9,7 @@ export const routes: Array<RouteObject> = [
     exact: true,
     path: '/',
     authType: 'unAuthenticated',
-    redirectTo: '/'
+    redirectTo: '/notfound'
 },
 {
     name: 'preview',

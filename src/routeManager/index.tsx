@@ -1,4 +1,5 @@
 import { Route } from 'react-router-dom'
+import NotFound from '../pages/notFound';
 const renderRoute = (route: RouteObject, redirect?: boolean) => {
 
     if (redirect) {
@@ -6,6 +7,7 @@ const renderRoute = (route: RouteObject, redirect?: boolean) => {
             <Route
             key={route.name}
             path={route.redirectTo}
+            Component={NotFound}
           />
         )
     }
@@ -19,9 +21,13 @@ const renderRoute = (route: RouteObject, redirect?: boolean) => {
 }
 
 
-function RouteManager(route: RouteObject, token?: string) {
+function RouteManager(route: RouteObject, referenceId: string | null, token?: string) {
     const isAuthenticated = !!token;
-    if (route.authType === 'authenticated' && isAuthenticated) {
+    if (!referenceId || referenceId === "" ){
+      return renderRoute(route, true)
+    }
+
+    else if (route.authType === 'authenticated' && isAuthenticated) {
       return renderRoute(route);
     } else if (route.authType === 'authenticated' && !isAuthenticated) {
       return renderRoute(route, true);
