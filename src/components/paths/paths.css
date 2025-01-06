@@ -176,7 +176,7 @@ textarea {
 .pathandmethod {
   color: whitesmoke;
   margin-bottom: 18%;
-
+  text-transform: lowercase;
 }
 .summary {
   color: whitesmoke;
@@ -212,6 +212,7 @@ textarea {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  text-transform: lowercase;
 }
 
 .method {

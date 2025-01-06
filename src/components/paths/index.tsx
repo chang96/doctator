@@ -487,11 +487,11 @@ const rewrittenHeaders = reWriteHeader(h)
                 const objectOrArray = typeof body[k] === "object"
                 return (
                   <div key={j} style={{display: "flex", flexDirection:"row"}}>
-                    <div style={{textTransform: "lowercase", width:"50%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                    <div style={{textTransform: "none", width:"50%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
                     <div style={{marginBottom:"3%"}}> {objectOrArray?<ExpandableStructure keyName={k} data={body[k]} /> : k } </div>
                     <div> <span style={{color: returnTextColor(bodyType)}}>{bodyType}</span></div>
                   </div>
-                  <div style={{textTransform: "lowercase"}}>
+                  <div style={{textTransform: "none"}}>
                     {(enumOptions)}
                   </div>
                   </div>
@@ -552,11 +552,11 @@ const rewrittenHeaders = reWriteHeader(h)
                 const objectOrArray = typeof isOk["res"][k] === "object"
                 return (
                   <div key={i} style={{display: "flex", flexDirection:"row"}}>
-                    <div style={{textTransform: "lowercase", width:"50%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+                    <div style={{textTransform: "none", width:"50%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
                     <div style={{marginBottom:"3%"}}> {objectOrArray?<ExpandableStructure keyName={k} data={isOk["res"][k]} /> : k } </div>
                     <div> <span style={{color: returnTextColor(bodyType)}}>{bodyType}</span></div>
                   </div>
-                  <div style={{textTransform: "lowercase"}}>
+                  <div style={{textTransform: "none"}}>
                     {(enumOptions)}
                   </div>
                   </div>
@@ -577,7 +577,7 @@ const rewrittenHeaders = reWriteHeader(h)
               return <div key={i} style={{color:"whitesmoke"}}> --header <span style={{color:"#cc8f77"}}>'{k}: {v}'</span> \</div>
             })}
             {/* {body && <div style={{width:"120%",display:"flex", flexDirection: "row", justifyContent:"space-between"}} ><div style={{}}>--data </div> <div><pre style={{backgroundColor:"",marginLeft:"-1%", marginTop:"-0.01%"}}><code>{JSON.stringify(body, null, " ")}</code></pre></div></div>} */}
-            {body && <div style={{display: "flex", width: "120%"}}><span style={{}}>--data  </span> <pre style={{marginTop:"-0.1%", marginLeft:"1%", color:"#cc8f77"}}><code>{JSON.stringify(body, null, " ")}</code></pre></div> }
+            {body && <div style={{display: "flex", width: "120%"}}><span style={{}}>--data  </span> <pre style={{marginTop:"-0.1%", marginLeft:"1%", color:"#cc8f77", textTransform:"none"}}><code>{JSON.stringify(body, null, " ")}</code></pre></div> }
 
           </div>
 
@@ -643,7 +643,7 @@ const rewrittenHeaders = reWriteHeader(h)
           }
         ></textarea> */}
         <hr></hr>
-        <pre><code style={{textTransform:"lowercase"}}>{typeof responses[state.selectedResponseIndex]?.res ===
+        <pre><code style={{textTransform:"none"}}>{typeof responses[state.selectedResponseIndex]?.res ===
             "object"
               ? JSON.stringify(
                   responses[state.selectedResponseIndex]?.res,
