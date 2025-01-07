@@ -89,7 +89,7 @@ function AuthSelection() {
             </div>
             <div>
               {Object.entries(sec).map(([k, _v], i) => {
-                return <div style={{}} key={i}><span style={{textTransform:"lowercase"}}>{k}</span><span style={{color:"red", textTransform:"lowercase"}}>*</span> | <span style={{color:"rgb(6, 247, 118)", textTransform:"lowercase"}}>string</span></div>;
+                return <div style={{}} key={i}><span style={{textTransform:"none"}}>{k}</span><span style={{color:"red", textTransform:"lowercase"}}>*</span> | <span style={{color:"rgb(6, 247, 118)", textTransform:"lowercase"}}>string</span></div>;
               })}
             </div>
           </div>
