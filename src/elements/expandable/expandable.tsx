@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { returnTextColor } from '../../utils/helpers';
 
-// A helper function to determine the type of the value in a human-readable form
-// const getType = (value: any) => {
-//   if (Array.isArray(value)) return 'Array';
-//   if (value && typeof value === 'object') return 'Object';
-//   return typeof value;
-// };
-
 function returnType (value: any): string {
   const type = typeof value
   if (type === "string" && (value as string).split(":").length > 1) {
@@ -26,6 +19,9 @@ function returnType (value: any): string {
     }
     return "[]"
   } 
+  if (type === "object" && value === null) {
+    return "null"
+  }
   return type.toLowerCase()
 }
 
@@ -53,7 +49,6 @@ const ExpandableValue = ({ value, keyName, innerElement }: {value: any, keyName:
   //   </div>)
   // }
 
-  // If it's a primitive value, just display its type
   if (valueType !== 'object' && valueType !== 'Array' && !valueType.includes("[]") ) {
     return (
       <div style={styles.item}>
@@ -62,7 +57,6 @@ const ExpandableValue = ({ value, keyName, innerElement }: {value: any, keyName:
     );
   }
 
-  // If it's an object or array, allow expansion
   return (
     <div style={styles.item}>
       <div onClick={toggleExpansion} style={styles.toggleButton}>
@@ -79,7 +73,6 @@ const ExpandableValue = ({ value, keyName, innerElement }: {value: any, keyName:
   );
 };
 
-// The main component to display an object or array with expansion
 const ExpandableStructure = ({ data, keyName }:{data: any, keyName: string}) => {
   return (
     <div style={styles.container}>
@@ -88,7 +81,6 @@ const ExpandableStructure = ({ data, keyName }:{data: any, keyName: string}) => 
   );
 };
 
-// Some simple styles for dark theme
 const styles: Record<string, React.CSSProperties> = {
   container: {
     color: 'white',
