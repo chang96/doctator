@@ -13,7 +13,7 @@ function QueriesFunc() {
   const dispatch: AppDispatch = useDispatch();
   const addQuery = () => {
     setState((state) => ({
-      queries: [...state.queries, { name: "", value: "", staticField: []}],
+      queries: [...state.queries, { name: "", value: "", staticFields: [], required: false, description: ""}],
     }));
     dispatch(setQueries({ queries: [...state.queries, { name: "", value: "", staticField: []}] }));
   };

@@ -23,12 +23,17 @@ import {
 import {
   extractParams,
   extractQueries,
+  formBodyV2,
+  getDescription,
+  getEnum,
+  getRequired,
   returnTextColor,
   returnType,
 } from "../../utils/helpers";
 import { getProject } from "../../utils/localstorageFuncs";
 import { makeProxyRequest, makeRequest } from "../../utils/makeRequest";
 import ExpandableStructure from "../../elements/expandable/expandable";
+import InfoTooltip from "../../elements/desc";
 function reWriteHeader(h: Record<string, string>): Record<string, string> {
   const res = {} as Record<string, string>;
   for (let key in h) {
@@ -97,7 +102,7 @@ function Paths() {
     requestParams: params,
     requestQueries: queries,
     headers,
-    requestBody: body,
+    requestBodyDetails,
     description,
     summary,
     // name,
@@ -118,7 +123,7 @@ function Paths() {
   const selectedProjectName = useSelector(
     (state: RootState) => state.requestConfig.selectedProjectName
   );
-
+  const body = formBodyV2(requestBodyDetails)
   // const endpoints = endpointsArr.map((x: any) =>
   //   `${x.method} ${x.path}`.toLowerCase()
   // );
@@ -394,6 +399,7 @@ const rewrittenHeaders = reWriteHeader(h)
                               <span
                                 style={{
                                   color: returnTextColor(endpoint.method),
+                                  textTransform:"uppercase"
                                 }}
                               >
                                 {endpoint.method}
@@ -481,14 +487,19 @@ const rewrittenHeaders = reWriteHeader(h)
             <div className="titles">Body</div>
             <div>
               { Object.keys(body).map((k, j) => {
-                const bodyType = returnType(body[k])
-                const rgx = new RegExp(/\.|:/g)
-                const enumOptions = bodyType === "enum" ? `-${body[k].replace(rgx, " ")}` : ""
+                let bodyType = returnType(body[k])
+                const e = getEnum(requestBodyDetails, k)
+                const req = getRequired(requestBodyDetails, k)
+                const desc = getDescription(requestBodyDetails, k)
+                if (bodyType === "string" && e.length > 0){
+                  bodyType = "enum"
+                }
+                const enumOptions = e.length  > 0 ? `-${e.join(" ")}` : ""
                 const objectOrArray = typeof body[k] === "object"
                 return (
                   <div key={j} style={{display: "flex", flexDirection:"row"}}>
                     <div style={{textTransform: "none", width:"50%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
-                    <div style={{marginBottom:"3%"}}> {objectOrArray?<ExpandableStructure keyName={k} data={body[k]} /> : k } </div>
+                    <div style={{marginBottom:"3%"}}> {objectOrArray?<ExpandableStructure keyName={k} data={body[k]} /> : k } <span>{desc!==""&& <InfoTooltip description={desc}/>}</span> <span style={{color:"red"}}>{req&&"*"}</span> </div>
                     <div> <span style={{color: returnTextColor(bodyType)}}>{bodyType}</span></div>
                   </div>
                   <div style={{textTransform: "none"}}>
@@ -504,15 +515,15 @@ const rewrittenHeaders = reWriteHeader(h)
           {queries && queries.length > 0 && <hr></hr>}
           {
             queries && queries.length > 0 && 
-            <div className="queries">
+            <div style={{textTransform:"none"}} className="queries">
             <div className="titles">Query</div>
             <div>
               {queries.map((q, i) => {
-                const enumOrstring = q?.staticField?.length === 0 || !q.staticField ? "string" : "enum"
-                const enumm= q?.staticField && q?.staticField?.length > 0 ? q.staticField.join(" ") : "" 
+                const enumOrstring = q?.staticFields?.length === 0 || !q.staticFields ? "string" : "enum"
+                const enumm= q?.staticFields && q?.staticFields?.length > 0 ? q.staticFields.join(" ") : "" 
                 return (
                   <div key={i}>
-                    <span>{q.name}</span> | <span style={{color: returnTextColor(enumOrstring)}}>{enumOrstring}</span> {enumm !== "" && <span> | {enumm}</span> } 
+                    <span>{q.name}</span><span style={{color:"red"}}>{q.required && "*"}</span> | <span style={{color: returnTextColor(enumOrstring)}}>{enumOrstring}</span> {enumm !== "" && <span> | {enumm}</span> } 
                   </div>
                 )
               })}

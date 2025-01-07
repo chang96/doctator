@@ -149,7 +149,9 @@ const requestConfigurationSlice = createSlice({
         (state.endpoints[state.selectedEndpoint].requestQueries || []).push({
           name: query.name,
           value: query.value,
-          staticField: query.staticField,
+          staticFields: query.staticFields,
+          required: query.required,
+          description: query.description
         });
       });
       saveEndpointsInLocalStorage(

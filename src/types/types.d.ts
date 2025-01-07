@@ -25,8 +25,9 @@ type RequestData = {
     queries?: MrQueries
     params?: Params;
 }
-type Queries = { name: string; value: string; staticField: string[] };
-type K = keyof Omit<Queries, "staticField">;
+type Queries = { name: string; value: string; staticFields: string[]; required: boolean, description: string };
+type BodyDetails = { name: string; value: string; staticFields: string[], required: boolean, description: string };
+type K = keyof Omit<Queries, "staticFields">;
 type Authd = { use: boolean, position: number }
 type ResponseData = {code: number, description: string, res: any}
 interface RequestConfiguration {
@@ -38,6 +39,7 @@ interface RequestConfiguration {
     method: string;
     path?: string;
     requestBody?: Record<string, any>;
+    requestBodyDetails: BodyDetails[]
     description?: string;
     tags: string[];
     summary: string;

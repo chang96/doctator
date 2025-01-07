@@ -100,3 +100,37 @@ export function returnType (value: any): string {
   return type.toLowerCase()
 }
 
+export function formBodyV2(bodyv2: BodyDetails[]|null): Record<string, any>|null {
+  if (!bodyv2) return null
+  return bodyv2.reduce((acc, curr) => {
+    acc[curr.name] = curr.value
+    return acc
+  }, {} as Record<string, any>)
+}
+
+export function getEnum(bodyv2: BodyDetails[], name: string): string[]{
+  const x = bodyv2.filter(x => x.name === name)
+  if (x.length === 0 ){
+    return []
+  }
+  return x[0]["staticFields"] || []
+}
+
+export function getRequired(bodyv2: BodyDetails[], name: string): boolean{
+  const x = bodyv2.filter(x => x.name === name)
+  if (x.length === 0 ){
+    return false
+  }
+  return x[0]["required"] || false
+}
+
+export function getDescription(bodyv2: BodyDetails[], name: string): string {
+  const x = bodyv2.filter(x => x.name === name)
+  if (x.length === 0 ){
+    return ""
+  }
+  return x[0]["description"] || ""
+}
+// export function getFieldsFromBodyDetails(bodyv2: BodyDetails[], name: string): {req: boolean, e: string[], desc: string} {
+  
+// }
